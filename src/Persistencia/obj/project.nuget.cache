@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "15OIBWQKV0c=",
+  "dgSpecHash": "B/HURuoccCM=",
   "success": true,
-  "projectFilePath": "/home/et12alumno/Escritorio/Datos_en_transito/src/Persistencia/Persistencia.csproj",
+  "projectFilePath": "/home/et12alumno/Datos_en_Transito/src/Persistencia/Persistencia.csproj",
   "expectedPackageFiles": [
     "/home/et12alumno/.nuget/packages/bouncycastle.cryptography/2.6.2/bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "/home/et12alumno/.nuget/packages/dapper/2.1.79/dapper.2.1.79.nupkg.sha512",

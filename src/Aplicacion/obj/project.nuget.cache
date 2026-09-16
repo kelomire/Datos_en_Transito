@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "I+kukuBhDAY=",
+  "dgSpecHash": "DytxJQAbDyc=",
   "success": true,
-  "projectFilePath": "/home/et12alumno/Escritorio/Datos_en_transito/src/Aplicacion/Aplicacion.csproj",
+  "projectFilePath": "/home/et12alumno/Datos_en_Transito/src/Aplicacion/Aplicacion.csproj",
   "expectedPackageFiles": [
     "/home/et12alumno/.nuget/packages/bouncycastle.cryptography/2.6.2/bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "/home/et12alumno/.nuget/packages/google.protobuf/3.32.0/google.protobuf.3.32.0.nupkg.sha512",

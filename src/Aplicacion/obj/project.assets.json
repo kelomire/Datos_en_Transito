@@ -559,11 +559,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/et12alumno/Escritorio/Datos_en_transito/src/Aplicacion/Aplicacion.csproj",
+      "projectUniqueName": "/home/et12alumno/Datos_en_Transito/src/Aplicacion/Aplicacion.csproj",
       "projectName": "Aplicacion",
-      "projectPath": "/home/et12alumno/Escritorio/Datos_en_transito/src/Aplicacion/Aplicacion.csproj",
+      "projectPath": "/home/et12alumno/Datos_en_Transito/src/Aplicacion/Aplicacion.csproj",
       "packagesPath": "/home/et12alumno/.nuget/packages/",
-      "outputPath": "/home/et12alumno/Escritorio/Datos_en_transito/src/Aplicacion/obj/",
+      "outputPath": "/home/et12alumno/Datos_en_Transito/src/Aplicacion/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/et12alumno/.nuget/NuGet/NuGet.Config"
@@ -618,7 +618,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.111/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.108/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

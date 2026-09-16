@@ -802,11 +802,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/et12alumno/Escritorio/Datos_en_transito/src/Persistencia/Persistencia.csproj",
+      "projectUniqueName": "/home/et12alumno/Datos_en_Transito/src/Persistencia/Persistencia.csproj",
       "projectName": "Persistencia",
-      "projectPath": "/home/et12alumno/Escritorio/Datos_en_transito/src/Persistencia/Persistencia.csproj",
+      "projectPath": "/home/et12alumno/Datos_en_Transito/src/Persistencia/Persistencia.csproj",
       "packagesPath": "/home/et12alumno/.nuget/packages/",
-      "outputPath": "/home/et12alumno/Escritorio/Datos_en_transito/src/Persistencia/obj/",
+      "outputPath": "/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/et12alumno/.nuget/NuGet/NuGet.Config"
@@ -822,8 +822,8 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "/home/et12alumno/Escritorio/Datos_en_transito/src/Aplicacion/Aplicacion.csproj": {
-              "projectPath": "/home/et12alumno/Escritorio/Datos_en_transito/src/Aplicacion/Aplicacion.csproj"
+            "/home/et12alumno/Datos_en_Transito/src/Aplicacion/Aplicacion.csproj": {
+              "projectPath": "/home/et12alumno/Datos_en_Transito/src/Aplicacion/Aplicacion.csproj"
             }
           }
         }
@@ -873,7 +873,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.111/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.108/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
