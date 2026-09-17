@@ -1,4 +1,4 @@
-using Aplicacion.Entidades;
+using Persistencia.Entidades;
 
 Console.WriteLine("=== DATOS EN TRÁNSITO ===");
 Console.WriteLine();

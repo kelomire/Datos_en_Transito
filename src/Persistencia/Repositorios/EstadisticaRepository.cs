@@ -1,4 +1,4 @@
-using Aplicacion.Interfaces;
+using Persistencia.Interfaces;
 using Dapper;
 
 namespace Persistencia.Repositorios;

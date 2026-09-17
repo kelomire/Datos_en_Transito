@@ -1,4 +1,4 @@
-using Aplicacion.Entidades;
+using Persistencia.Entidades;
 using Xunit;
 
 namespace Tests;

@@ -287,19 +287,6 @@
         "runtime": {
           "lib/net9.0/ZstdSharp.dll": {}
         }
-      },
-      "Aplicacion/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v10.0",
-        "dependencies": {
-          "MySql.Data": "9.7.0"
-        },
-        "compile": {
-          "bin/placeholder/Aplicacion.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Aplicacion.dll": {}
-        }
       }
     }
   },
@@ -781,16 +768,10 @@
         "zstdsharp.port.0.8.6.nupkg.sha512",
         "zstdsharp.port.nuspec"
       ]
-    },
-    "Aplicacion/1.0.0": {
-      "type": "project",
-      "path": "../Aplicacion/Aplicacion.csproj",
-      "msbuildProject": "../Aplicacion/Aplicacion.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "Aplicacion >= 1.0.0",
       "Dapper >= 2.1.79",
       "MySql.Data >= 9.7.0",
       "MySqlConnector >= 2.6.2"
@@ -821,11 +802,7 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {
-            "/home/et12alumno/Datos_en_Transito/src/Aplicacion/Aplicacion.csproj": {
-              "projectPath": "/home/et12alumno/Datos_en_Transito/src/Aplicacion/Aplicacion.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {

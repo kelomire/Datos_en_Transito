@@ -16,3 +16,16 @@
 /home/et12alumno/Escritorio/Datos_en_transito/src/Persistencia/obj/Debug/net10.0/refint/Persistencia.dll
 /home/et12alumno/Escritorio/Datos_en_transito/src/Persistencia/obj/Debug/net10.0/Persistencia.pdb
 /home/et12alumno/Escritorio/Datos_en_transito/src/Persistencia/obj/Debug/net10.0/ref/Persistencia.dll
+/home/et12alumno/Datos_en_Transito/src/Persistencia/bin/Debug/net10.0/Persistencia.deps.json
+/home/et12alumno/Datos_en_Transito/src/Persistencia/bin/Debug/net10.0/Persistencia.dll
+/home/et12alumno/Datos_en_Transito/src/Persistencia/bin/Debug/net10.0/Persistencia.pdb
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.csproj.AssemblyReference.cache
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.GeneratedMSBuildEditorConfig.editorconfig
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.AssemblyInfoInputs.cache
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.AssemblyInfo.cs
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.csproj.CoreCompileInputs.cache
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.sourcelink.json
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.dll
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/refint/Persistencia.dll
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/Persistencia.pdb
+/home/et12alumno/Datos_en_Transito/src/Persistencia/obj/Debug/net10.0/ref/Persistencia.dll

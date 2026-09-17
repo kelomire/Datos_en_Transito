@@ -1,5 +1,5 @@
-using Aplicacion.Entidades;
-using Aplicacion.Interfaces;
+using Persistencia.Entidades;
+using Persistencia.Interfaces;
 using Aplicacion.Servicios;
 using Xunit;
 

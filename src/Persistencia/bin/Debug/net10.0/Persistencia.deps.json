@@ -8,7 +8,6 @@
     ".NETCoreApp,Version=v10.0": {
       "Persistencia/1.0.0": {
         "dependencies": {
-          "Aplicacion": "1.0.0",
           "Dapper": "2.1.79",
           "MySql.Data": "9.7.0",
           "MySqlConnector": "2.6.2"
@@ -219,17 +218,6 @@
             "fileVersion": "0.8.6.0"
           }
         }
-      },
-      "Aplicacion/1.0.0": {
-        "dependencies": {
-          "MySql.Data": "9.7.0"
-        },
-        "runtime": {
-          "Aplicacion.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
       }
     }
   },
@@ -350,11 +338,6 @@
       "sha512": "sha512-iP4jVLQoQmUjMU88g1WObiNr6YKZGvh4aOXn3yOJsHqZsflwRsxZPcIBvNXgjXO3vQKSLctXGLTpcBPLnWPS8A==",
       "path": "zstdsharp.port/0.8.6",
       "hashPath": "zstdsharp.port.0.8.6.nupkg.sha512"
-    },
-    "Aplicacion/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
     }
   }
 }
