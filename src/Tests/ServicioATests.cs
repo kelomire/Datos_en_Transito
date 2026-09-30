@@ -8,7 +8,7 @@ namespace Tests;
 public class ServicioATests
 {
     [Fact]
-    public void Router_Debe_Procesar_Paquete()
+    public void Router()
     {
         var repo = new FakeSimulacionRepository();
         var service = new SimulacionService(repo);
@@ -33,7 +33,7 @@ public class ServicioATests
     }
 
     [Fact]
-    public void Varios_Dispositivos_Deben_Usar_Polimorfismo()
+    public void Polimorfismo()
     {
         var repo = new FakeSimulacionRepository();
         var service = new SimulacionService(repo);

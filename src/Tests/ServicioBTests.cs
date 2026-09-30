@@ -6,7 +6,7 @@ namespace Tests;
 public class ServicioBTests
 {
     [Fact]
-    public void Paquete_Con_TTL_Bajo_Debe_Descartarse()
+    public void Paquete_Descartarse()
     {
         var paquete = new PaqueteRed(
             "10.0.0.1",
@@ -23,7 +23,7 @@ public class ServicioBTests
     }
 
     [Fact]
-    public void Firewall_Debe_Descartar_IP_Bloqueada()
+    public void Firewall()
     {
         var paquete = new PaqueteRed(
             "192.0.2.10",
@@ -39,7 +39,7 @@ public class ServicioBTests
     }
 
     [Fact]
-    public void Paquete_Debe_Validar_Tamano()
+    public void Paquete_Validar()
     {
         Assert.Throws<ArgumentException>(() =>
             new PaqueteRed(
@@ -50,7 +50,7 @@ public class ServicioBTests
     }
 
     [Fact]
-    public void Paquete_Debe_Validar_TTL()
+    public void Paquete_TTL()
     {
         Assert.Throws<ArgumentException>(() =>
             new PaqueteRed(
