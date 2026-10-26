@@ -2,53 +2,44 @@
 
 ```mermaid
 erDiagram
+    direction LR
+
     DISPOSITIVOS {
         int id PK
-        varchar tipo
         varchar nombre
-        varchar direccion_ip
-        decimal latencia
-    }
-
-    SIMULACIONES {
-        int id PK
-        datetime fecha_inicio
-        datetime fecha_fin
-        varchar estado
-        decimal latencia_total
-        int ttl_final
+        varchar tipo
+        int latencia
     }
 
     PAQUETES {
         int id PK
-        int simulacion_id FK
         varchar ip_origen
         varchar ip_destino
+        int tamano_bytes
         int ttl_inicial
+    }
+
+    SIMULACIONES {
+        int id PK
+        int paquete_id FK
+        int latencia_total
         int ttl_final
-        varchar estado
+        boolean entregado
+        boolean descartado
+        datetime fecha
     }
 
     RECORRIDOS {
         int id PK
         int simulacion_id FK
-        int paquete_id FK
         int dispositivo_id FK
-        int orden
-        decimal latencia
+        int latencia
+        int ttl_final
+        boolean entregado
+        boolean descartado
     }
 
-    RESULTADOS {
-        int id PK
-        int recorrido_id FK
-        varchar estado
-        decimal latencia
-        int ttl
-        int bytes
-    }
-
-    SIMULACIONES ||--o{ PAQUETES : contiene
+    PAQUETES ||--o{ SIMULACIONES : "se simula en"
     SIMULACIONES ||--o{ RECORRIDOS : posee
-    PAQUETES ||--o{ RECORRIDOS : realiza
     DISPOSITIVOS ||--o{ RECORRIDOS : participa
-    RECORRIDOS ||--o{ RESULTADOS : genera
+```
