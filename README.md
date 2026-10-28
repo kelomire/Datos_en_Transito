@@ -31,3 +31,10 @@ app.MapPost("/productos", (Producto p) =>
     var creado = Crear(p);
     return TypedResults.Created($"/productos/{creado.Id}", creado);
 });
+
+
+
+| Columna 1 | Columna 2 | Columna 3 |
+| --- | --- | --- |
+| Fila 1, Dato 1 | Fila 1, Dato 2 | Fila 1, Dato 3 |
+| Fila 2, Dato 1 | Fila 2, Dato 2 | Fila 2, Dato 3 |
