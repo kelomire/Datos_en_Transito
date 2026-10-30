@@ -30,7 +30,7 @@ public class DispositivoRepository : IDispositivoRepository
 
     public IEnumerable<DispositivoRed> ObtenerTodos()
     {
-        using var connection = _factory.CrearConexionEscritura();
+        using var connection = _factory.CrearConexionLectura();
 
         var items = connection.Query<dynamic>(
             "SELECT id,nombre,tipo,latencia FROM dispositivos");
@@ -45,7 +45,7 @@ public class DispositivoRepository : IDispositivoRepository
 
     public DispositivoRed ObtenerPorId(int id)
     {
-        using var connection = _factory.CrearConexionEscritura();
+        using var connection = _factory.CrearConexionLectura();
 
         var item = connection.QueryFirstOrDefault<dynamic>(
             "SELECT id,nombre,tipo,latencia FROM dispositivos WHERE id=@id",

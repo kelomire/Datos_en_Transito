@@ -7,11 +7,7 @@ public class Switch : DispositivoRed
 
     public override ResultadoProcesamiento Procesar(PaqueteRed paquete)
     {
-        paquete.Ttl--;
-
-        if (paquete.Ttl <= 0)
-            paquete.Descartado = true;
-
+        // El switch deja continuar al paquete sin modificar el TTL.
         return new ResultadoProcesamiento
         {
             DispositivoId = Id,
