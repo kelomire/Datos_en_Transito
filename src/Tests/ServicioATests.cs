@@ -1,80 +1,46 @@
-using Persistencia.Entidades;
-using Persistencia.Interfaces;
-using Aplicacion.Servicios;
+using Datos_en_Transito.Persistencia.Entidades;
 using Xunit;
 
 namespace Tests;
 
+// Reglas de cada dispositivo: continuidad, descarte y TTL.
 public class ServicioATests
 {
     [Fact]
-    public void Router()
+    public void Switch_Continua_SinModificarTtl()
     {
-        var repo = new FakeSimulacionRepository();
-        var service = new SimulacionService(repo);
-
-        var paquete = new PaqueteRed(
-            "10.0.0.1",
-            "10.0.0.2",
-            500,
-            5);
-
-        var simulacion = service.Ejecutar(
-            paquete,
-            new DispositivoRed[]
-            {
-                new Router(1, "Router1")
-            });
-
-        Assert.Single(simulacion.Resultados);
-        Assert.Equal("Router", simulacion.Resultados[0].TipoDispositivo);
-        Assert.Equal(10, simulacion.LatenciaTotal);
-        Assert.True(paquete.Entregado);
+        var r = new Switch("sw1", 1).Procesar(new PaqueteRed(500, 5));
+        Assert.True(r.Continua);
+        Assert.Equal(5, r.Paquete!.Ttl);
     }
 
     [Fact]
-    public void Polimorfismo()
+    public void Router_ReduceTtlEnUno()
     {
-        var repo = new FakeSimulacionRepository();
-        var service = new SimulacionService(repo);
-
-        var paquete = new PaqueteRed(
-            "10.0.0.1",
-            "10.0.0.2",
-            100,
-            10);
-
-        var simulacion = service.Ejecutar(
-            paquete,
-            new DispositivoRed[]
-            {
-                new Router(1, "R1"),
-                new Switch(2, "S1"),
-                new AccessPoint(3, "AP1")
-            });
-
-        Assert.Equal(3, simulacion.Resultados.Count);
-        Assert.Equal(18, simulacion.LatenciaTotal);
-        Assert.True(paquete.Entregado);
+        var r = new Router("r1", 2).Procesar(new PaqueteRed(500, 5));
+        Assert.True(r.Continua);
+        Assert.Equal(4, r.Paquete!.Ttl);
     }
 
-    private class FakeSimulacionRepository : ISimulacionRepository
+    [Fact]
+    public void Router_DescartaCuandoTtlLlegaACero()
     {
-        private readonly List<Simulacion> _items = new();
-
-        public void Registrar(Simulacion simulacion)
-        {
-            _items.Add(simulacion);
-        }
-
-        public Simulacion? ObtenerPorId(int id)
-        {
-            return _items.FirstOrDefault(x => x.Id == id);
-        }
-
-        public IEnumerable<Simulacion> ObtenerTodas()
-        {
-            return _items;
-        }
+        var r = new Router("r1", 2).Procesar(new PaqueteRed(500, 1));
+        Assert.False(r.Continua);
+        Assert.Null(r.Paquete);
     }
+
+    [Theory]
+    [InlineData(1500, true)]
+    [InlineData(1501, false)]
+    public void Firewall_DescartaMasDe1500Bytes(int bytes, bool continua)
+        => Assert.Equal(continua, new Firewall("fw", 1).Procesar(new PaqueteRed(bytes, 5)).Continua);
+
+    [Theory]
+    [InlineData(0, 5)]
+    [InlineData(-1, 5)]
+    [InlineData(100, 0)]
+    [InlineData(100, -3)]
+    public void Paquete_RechazaTamanioOTtlNoPositivos(int bytes, int ttl)
+        => Assert.Throws<ArgumentOutOfRangeException>(() => new PaqueteRed(bytes, ttl));
 }

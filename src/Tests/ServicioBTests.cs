@@ -1,62 +1,48 @@
-using Persistencia.Entidades;
+using Datos_en_Transito.Persistencia.Entidades;
 using Xunit;
 
 namespace Tests;
 
+// Latencia y recorrido completo de una simulación.
 public class ServicioBTests
 {
     [Fact]
-    public void Paquete_Descartarse()
+    public void Dispositivo_RechazaLatenciaNegativa()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => new Switch("sw", -1));
+
+    [Fact]
+    public void Dispositivo_AceptaLatenciaCero()
+        => Assert.Equal(0, new Switch("sw", 0).LatenciaMs);
+
+    [Fact]
+    public void Simulacion_SumaLatenciaDeTodosLosDispositivos()
     {
-        var paquete = new PaqueteRed(
-            "10.0.0.1",
-            "10.0.0.2",
-            100,
-            1);
-
-        var router = new Router(1, "Router");
-
-        var resultado = router.Procesar(paquete);
-
-        Assert.True(resultado.Descartado);
-        Assert.Equal(0, resultado.TtlFinal);
+        var sim = new Simulacion(new PaqueteRed(500, 10),
+            new DispositivoRed[] { new Switch("sw", 1), new Router("r", 5), new Firewall("fw", 3) });
+        sim.Ejecutar();
+        Assert.True(sim.Entregado);
+        Assert.Equal(9, sim.LatenciaTotalMs);
+        Assert.Equal(3, sim.Pasos.Count);
     }
 
     [Fact]
-    public void Firewall()
+    public void Simulacion_SeDetieneAlDescartarYCuentaLaLatenciaHastaAhi()
     {
-        var paquete = new PaqueteRed(
-            "192.0.2.10",
-            "10.0.0.2",
-            100,
-            10);
-
-        var firewall = new Firewall(1, "Firewall");
-
-        var resultado = firewall.Procesar(paquete);
-
-        Assert.True(resultado.Descartado);
+        var sim = new Simulacion(new PaqueteRed(2000, 10),
+            new DispositivoRed[] { new Switch("sw", 1), new Firewall("fw", 3), new Router("r", 5) });
+        sim.Ejecutar();
+        Assert.False(sim.Entregado);
+        Assert.Equal(4, sim.LatenciaTotalMs);
+        Assert.Equal(2, sim.Pasos.Count);
     }
 
     [Fact]
-    public void Paquete_Validar()
+    public void Simulacion_DescartaPorTtlEnVariosRouters()
     {
-        Assert.Throws<ArgumentException>(() =>
-            new PaqueteRed(
-                "10.0.0.1",
-                "10.0.0.2",
-                0,
-                10));
-    }
-
-    [Fact]
-    public void Paquete_TTL()
-    {
-        Assert.Throws<ArgumentException>(() =>
-            new PaqueteRed(
-                "10.0.0.1",
-                "10.0.0.2",
-                100,
-                0));
+        var sim = new Simulacion(new PaqueteRed(100, 2),
+            new DispositivoRed[] { new Router("r1", 1), new Router("r2", 1), new Router("r3", 1) });
+        sim.Ejecutar();
+        Assert.False(sim.Entregado);
+        Assert.Equal(2, sim.Pasos.Count);
     }
 }

@@ -1,6 +1,7 @@
 using Persistencia.Entidades;
 using Persistencia.Interfaces;
 using Dapper;
+using Datos_en_Transito.Persistencia;
 
 namespace Persistencia.Repositorios;
 
@@ -15,7 +16,7 @@ public class DispositivoRepository : IDispositivoRepository
 
     public void Agregar(DispositivoRed dispositivo)
     {
-        using var connection = _factory.CrearConexionDesarrollo();
+        using var connection = _factory.CrearConexionEscritura();
 
         connection.Execute(
             "INSERT INTO dispositivos(nombre,tipo,latencia) VALUES (@Nombre,@Tipo,@Latencia)",
@@ -29,7 +30,7 @@ public class DispositivoRepository : IDispositivoRepository
 
     public IEnumerable<DispositivoRed> ObtenerTodos()
     {
-        using var connection = _factory.CrearConexionDesarrollo();
+        using var connection = _factory.CrearConexionEscritura();
 
         var items = connection.Query<dynamic>(
             "SELECT id,nombre,tipo,latencia FROM dispositivos");
@@ -44,7 +45,7 @@ public class DispositivoRepository : IDispositivoRepository
 
     public DispositivoRed ObtenerPorId(int id)
     {
-        using var connection = _factory.CrearConexionDesarrollo();
+        using var connection = _factory.CrearConexionEscritura();
 
         var item = connection.QueryFirstOrDefault<dynamic>(
             "SELECT id,nombre,tipo,latencia FROM dispositivos WHERE id=@id",

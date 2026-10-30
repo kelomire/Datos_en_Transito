@@ -1,6 +1,7 @@
 using Persistencia.Entidades;
 using Persistencia.Interfaces;
 using Dapper;
+using Datos_en_Transito.Persistencia;
 
 namespace Persistencia.Repositorios;
 
@@ -15,7 +16,7 @@ public class SimulacionRepository : ISimulacionRepository
 
     public void Registrar(Simulacion simulacion)
     {
-        using var connection = _factory.CrearConexionDesarrollo();
+        using var connection = _factory.CrearConexionEscritura();
 
         connection.Execute(
             "sp_registrar_simulacion",
@@ -34,7 +35,7 @@ public class SimulacionRepository : ISimulacionRepository
 
     public Simulacion? ObtenerPorId(int id)
     {
-        using var connection = _factory.CrearConexionDesarrollo();
+        using var connection = _factory.CrearConexionEscritura();
 
         var data = connection.QueryFirstOrDefault<dynamic>(
             """
@@ -75,7 +76,7 @@ public class SimulacionRepository : ISimulacionRepository
 
     public IEnumerable<Simulacion> ObtenerTodas()
     {
-        using var connection = _factory.CrearConexionDesarrollo();
+        using var connection = _factory.CrearConexionEscritura();
 
         var data = connection.Query<dynamic>(
             """

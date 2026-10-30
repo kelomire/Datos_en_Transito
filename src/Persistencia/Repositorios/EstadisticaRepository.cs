@@ -1,5 +1,6 @@
 using Persistencia.Interfaces;
 using Dapper;
+using Datos_en_Transito.Persistencia;
 
 namespace Persistencia.Repositorios;
 
@@ -14,7 +15,7 @@ public class EstadisticaRepository : IEstadisticaRepository
 
     public IEnumerable<object> ObtenerEstadisticas()
     {
-        using var connection = _factory.CrearConexionDesarrollo();
+        using var connection = _factory.CrearConexionLectura();
 
         return connection.Query(
             "sp_estadisticas",
