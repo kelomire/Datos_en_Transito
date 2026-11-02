@@ -3,16 +3,16 @@ public abstract class DispositivoRed
 {
     public int Id { get; set; }
     public string Nombre { get; set; }
-    public int Latencia { get; protected set; }
+    public int latenciaMs { get; protected set; }
 
-    protected DispositivoRed(int id, string nombre, int latencia)
+    protected DispositivoRed(int id, string nombre, int latenciaMs)
     {
         if (string.IsNullOrWhiteSpace(nombre)) throw new ArgumentException("Nombre inválido");
-        if (latencia < 0) throw new ArgumentException("Latencia inválida");
+        if (latenciaMs < 0) throw new ArgumentException("latenciaMs inválida");
 
         Id = id;
         Nombre = nombre;
-        Latencia = latencia;
+        latenciaMs = latenciaMs;
     }
 
 #pragma warning disable CS0436 // El tipo entra en conflicto con un tipo importado

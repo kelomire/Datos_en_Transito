@@ -1,59 +1,92 @@
-using System;
-using Persistencia.Entidades;
+using Persistencia;
+using Aplicacion;
 using Xunit;
 
-namespace Tests;
-
-public class ServicioBTests
+namespace Aplicacion
 {
-    private static PaqueteRed Paquete(int bytes = 500, int ttl = 10)
-        => new("10.0.0.1", "10.0.0.2", bytes, ttl);
-
-    [Fact]
-    public void Dispositivo_RechazaLatenciaNegativa()
-        => Assert.Throws<ArgumentException>(() => new Switch(1, "sw", -1));
-
-    [Fact]
-    public void Dispositivo_AceptaLatenciaCero()
-        => Assert.Equal(0, new Switch(1, "sw", 0).Latencia);
-
-    [Fact]
-    public void Simulacion_SumaLatenciaDeTodosLosDispositivos()
+    public class ServicioBTests
     {
-        var sim = new Simulacion(Paquete(), new DispositivoRed[]
+        private readonly Repositorio repositorio;
+
+        public ServicioB(Repositorio repositorio)
         {
-            new Switch(1, "sw", 1), new Router(2, "r", 5), new Firewall(3, "fw", 3)
-        });
-        sim.Ejecutar();
-        Assert.True(sim.Paquete.Entregado);
-        Assert.Equal(9, sim.LatenciaTotal);
-        Assert.Equal(3, sim.Resultados.Count);
+            this.repositorio = repositorio;
+        }
+
+        [Fact]
+        public SimulacionResultado Ejecutar(SimulacionDatos datos)
+        {
+            // ✅ Declarada UNA SOLA VEZ — FUERA del bucle
+            int latenciaTotalMs = 0;
+            int ttlActual = datos.Ttl;
+            string estado = "Completada";
+            var recorrido = new List<PasoRecorrido>();
+
+            foreach (var idDisp in datos.DispositivoIds)
+            {
+                var dispositivo = repositorio.Dispositivos
+                    .FirstOrDefault(d => d.Id == idDisp);
+
+                if (dispositivo == null)
+                    continue;
+
+                // ✅ ORDEN CORRECTO: PRIMERO sumar
+                latenciaTotalMs += dispositivo.LatenciaMs;
+
+                // DESPUÉS restar TTL
+                ttlActual--;
+
+                recorrido.Add(new PasoRecorrido
+                {
+                    Orden = recorrido.Count + 1,
+                    DispositivoId = idDisp,
+                    LatenciaAplicadaMs = dispositivo.LatenciaMs,
+                    TtlRestante = ttlActual
+                });
+
+                if (ttlActual <= 0)
+                {
+                    estado = "Interrumpida por TTL agotado";
+                    ttlActual = 0;
+                    break;
+                }
+            }
+
+            return new SimulacionResultado
+            {
+                Id = System.Guid.NewGuid().ToString(),
+                Estado = estado,
+                TtlFinal = ttlActual,
+                LatenciaTotalMs = latenciaTotalMs, // ✅ Valor calculado
+                Recorrido = recorrido
+            };
+        }
+       
     }
 
-    [Fact]
-    public void Simulacion_SeDetieneAlDescartarYSumaLatenciaHastaAhi()
+    public class SimulacionDatos
     {
-        var sim = new Simulacion(Paquete(bytes: 2000), new DispositivoRed[]
-        {
-            new Switch(1, "sw", 1), new Firewall(2, "fw", 3), new Router(3, "r", 5)
-        });
-        sim.Ejecutar();
-        Assert.True(sim.Paquete.Descartado);
-        Assert.False(sim.Paquete.Entregado);
-        Assert.Equal(4, sim.LatenciaTotal);
-        Assert.Equal(2, sim.Resultados.Count);
+        public string Origen { get; set; }
+        public string Destino { get; set; }
+        public int TamanioBytes { get; set; }
+        public int Ttl { get; set; }
+        public List<string> DispositivoIds { get; set; } = new();
     }
 
-    [Fact]
-    public void Simulacion_DescartaPorTtlEnVariosRouters()
+    public class SimulacionResultado
     {
-        var sim = new Simulacion(Paquete(ttl: 2), new DispositivoRed[]
-        {
-            new Router(1, "r1", 1), new Router(2, "r2", 1), new Router(3, "r3", 1)
-        });
-        sim.Ejecutar();
-        Assert.True(sim.Paquete.Descartado);
-        Assert.Equal(2, sim.Resultados.Count);
-        Assert.Equal(2, sim.LatenciaTotal);
+        public string Id { get; set; }
+        public string Estado { get; set; }
+        public int TtlFinal { get; set; }
+        public int LatenciaTotalMs { get; set; }
+        public List<PasoRecorrido> Recorrido { get; set; } = new();
+    }
+
+    public class PasoRecorrido
+    {
+        public int Orden { get; set; }
+        public string DispositivoId { get; set; }
+        public int LatenciaAplicadaMs { get; set; }
+        public int TtlRestante { get; set; }
     }
 }

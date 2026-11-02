@@ -91,9 +91,9 @@ La lógica de simulación se resuelve con polimorfismo:
   "tamanoBytes": 1200,
   "ttl": 5,
   "dispositivos": [
-    { "id": 1, "nombre": "router-principal", "tipo": "Router", "latencia": 2 },
-    { "id": 2, "nombre": "switch-core", "tipo": "Switch", "latencia": 1 },
-    { "id": 3, "nombre": "fw-perimetral", "tipo": "Firewall", "latencia": 3 }
+    { "id": 1, "nombre": "router-principal", "tipo": "Router", "latenciaMs": 2 },
+    { "id": 2, "nombre": "switch-core", "tipo": "Switch", "latenciaMs": 1 },
+    { "id": 3, "nombre": "fw-perimetral", "tipo": "Firewall", "latenciaMs": 3 }
   ]
 }
 ```

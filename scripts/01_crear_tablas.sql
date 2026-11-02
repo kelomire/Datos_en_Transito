@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS dispositivos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     tipo VARCHAR(50) NOT NULL,
-    latencia INT NOT NULL
+    latenciaMs INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS paquetes (
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS paquetes (
 CREATE TABLE IF NOT EXISTS simulaciones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     paquete_id INT,
-    latencia_total INT NOT NULL DEFAULT 0,
+    latenciaMs_total INT NOT NULL DEFAULT 0,
     ttl_final INT NOT NULL,
     entregado BOOLEAN NOT NULL,
     descartado BOOLEAN NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS recorridos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     simulacion_id INT NOT NULL,
     dispositivo_id INT NOT NULL,
-    latencia INT NOT NULL,
+    latenciaMs INT NOT NULL,
     ttl_final INT NOT NULL,
     entregado BOOLEAN NOT NULL,
     descartado BOOLEAN NOT NULL,

@@ -9,7 +9,7 @@ CREATE PROCEDURE sp_registrar_simulacion(
     IN p_ip_destino VARCHAR(45),
     IN p_tamano INT,
     IN p_ttl INT,
-    IN p_latencia INT,
+    IN p_latenciaMs INT,
     IN p_entregado BOOLEAN,
     IN p_descartado BOOLEAN
 )
@@ -36,14 +36,14 @@ BEGIN
 
     INSERT INTO simulaciones(
         paquete_id,
-        latencia_total,
+        latenciaMs_total,
         ttl_final,
         entregado,
         descartado
     )
     VALUES(
         v_paquete,
-        p_latencia,
+        p_latenciaMs,
         p_ttl,
         p_entregado,
         p_descartado
@@ -72,8 +72,8 @@ BEGIN
         COUNT(*) AS total_simulaciones,
         SUM(entregado) AS entregadas,
         SUM(descartado) AS descartadas,
-        AVG(latencia_total) AS latencia_promedio,
-        MAX(latencia_total) AS latencia_maxima
+        AVG(latenciaMs_total) AS latenciaMs_promedio,
+        MAX(latenciaMs_total) AS latenciaMs_maxima
     FROM simulaciones;
 
     COMMIT;
@@ -94,8 +94,8 @@ BEGIN
     SELECT
         d.tipo,
         COUNT(r.id) AS paquetes_procesados,
-        AVG(r.latencia) AS latencia_promedio,
-        MAX(r.latencia) AS latencia_maxima,
+        AVG(r.latenciaMs) AS latenciaMs_promedio,
+        MAX(r.latenciaMs) AS latenciaMs_maxima,
         SUM(r.entregado) AS entregados,
         SUM(r.descartado) AS descartados
     FROM dispositivos d

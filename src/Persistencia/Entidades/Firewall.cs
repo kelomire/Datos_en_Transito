@@ -4,8 +4,8 @@ public class Firewall : DispositivoRed, IFiltrador
 {
     public const int TamanoMaximoBytes = 1500;
 
-    public Firewall(int id, string nombre, int latencia = 8)
-        : base(id, nombre, latencia) { }
+    public Firewall(int id, string nombre, int latenciaMs = 8)
+        : base(id, nombre, latenciaMs) { }
 
     public bool PuedeProcesar(PaqueteRed paquete)
     {
@@ -21,7 +21,7 @@ public class Firewall : DispositivoRed, IFiltrador
         {
             DispositivoId = Id,
             TipoDispositivo = nameof(Firewall),
-            Latencia = Latencia,
+            latenciaMs = latenciaMs,
             TtlFinal = paquete.Ttl,
             Entregado = paquete.Entregado,
             Descartado = paquete.Descartado

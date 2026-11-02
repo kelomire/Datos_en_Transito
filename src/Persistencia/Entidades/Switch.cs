@@ -2,8 +2,8 @@ namespace Persistencia.Entidades;
 
 public class Switch : DispositivoRed
 {
-    public Switch(int id, string nombre, int latencia = 3)
-        : base(id, nombre, latencia) { }
+    public Switch(int id, string nombre, int latenciaMs = 3)
+        : base(id, nombre, latenciaMs) { }
 
     public override ResultadoProcesamiento Procesar(PaqueteRed paquete)
     {
@@ -12,7 +12,7 @@ public class Switch : DispositivoRed
         {
             DispositivoId = Id,
             TipoDispositivo = nameof(Switch),
-            Latencia = Latencia,
+            latenciaMs = latenciaMs,
             TtlFinal = paquete.Ttl,
             Entregado = paquete.Entregado,
             Descartado = paquete.Descartado

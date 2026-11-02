@@ -8,7 +8,7 @@ erDiagram
         int id PK
         varchar nombre
         varchar tipo
-        int latencia
+        int latenciaMs
     }
 
     PAQUETES {
@@ -22,7 +22,7 @@ erDiagram
     SIMULACIONES {
         int id PK
         int paquete_id FK
-        int latencia_total
+        int latenciaMs_total
         int ttl_final
         boolean entregado
         boolean descartado
@@ -33,7 +33,7 @@ erDiagram
         int id PK
         int simulacion_id FK
         int dispositivo_id FK
-        int latencia
+        int latenciaMs
         int ttl_final
         boolean entregado
         boolean descartado

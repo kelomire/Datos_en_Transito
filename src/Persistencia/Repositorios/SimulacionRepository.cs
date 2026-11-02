@@ -26,7 +26,7 @@ public class SimulacionRepository : ISimulacionRepository
                 IpDestino = simulacion.Paquete.IpDestino,
                 Tamano = simulacion.Paquete.TamanoBytes,
                 Ttl = simulacion.Paquete.Ttl,
-                Latencia = simulacion.LatenciaTotal,
+                latenciaMs = simulacion.latenciaMsTotal,
                 Entregado = simulacion.Paquete.Entregado,
                 Descartado = simulacion.Paquete.Descartado
             },
@@ -41,7 +41,7 @@ public class SimulacionRepository : ISimulacionRepository
             """
             SELECT
                 s.id,
-                s.latencia_total,
+                s.latenciaMs_total,
                 s.ttl_final,
                 s.entregado,
                 s.descartado,
@@ -82,7 +82,7 @@ public class SimulacionRepository : ISimulacionRepository
             """
             SELECT
                 s.id,
-                s.latencia_total,
+                s.latenciaMs_total,
                 s.ttl_final,
                 s.entregado,
                 s.descartado,

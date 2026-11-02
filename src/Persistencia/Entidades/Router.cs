@@ -2,8 +2,8 @@ namespace Persistencia.Entidades;
 
 public class Router : DispositivoRed
 {
-    public Router(int id, string nombre, int latencia = 10)
-        : base(id, nombre, latencia) { }
+    public Router(int id, string nombre, int latenciaMs = 10)
+        : base(id, nombre, latenciaMs) { }
 
     public override ResultadoProcesamiento Procesar(PaqueteRed paquete)
     {
@@ -16,7 +16,7 @@ public class Router : DispositivoRed
         {
             DispositivoId = Id,
             TipoDispositivo = nameof(Router),
-            Latencia = Latencia,
+            latenciaMs = latenciaMs,
             TtlFinal = paquete.Ttl,
             Entregado = paquete.Entregado,
             Descartado = paquete.Descartado

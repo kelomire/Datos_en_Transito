@@ -2,8 +2,8 @@ namespace Persistencia.Entidades;
 
 public class AccessPoint : DispositivoRed
 {
-    public AccessPoint(int id, string nombre, int latencia = 5)
-        : base(id, nombre, latencia) {}
+    public AccessPoint(int id, string nombre, int latenciaMs = 5)
+        : base(id, nombre, latenciaMs) {}
 
     public override ResultadoProcesamiento Procesar(PaqueteRed paquete)
     {
@@ -16,7 +16,7 @@ public class AccessPoint : DispositivoRed
         {
             DispositivoId = Id,
             TipoDispositivo = nameof(AccessPoint),
-            Latencia = Latencia,
+            latenciaMs = latenciaMs,
             TtlFinal = paquete.Ttl,
             Entregado = paquete.Entregado,
             Descartado = paquete.Descartado

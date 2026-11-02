@@ -6,7 +6,7 @@ public class Simulacion
     public PaqueteRed Paquete { get; }
     public List<DispositivoRed> Dispositivos { get; }
     public List<ResultadoProcesamiento> Resultados { get; } = new();
-    public int LatenciaTotal { get; private set; }
+    public int latenciaMsTotal { get; private set; }
 
     public Simulacion(PaqueteRed paquete, IEnumerable<DispositivoRed> dispositivos)
     {
@@ -23,7 +23,7 @@ public class Simulacion
 
             var resultado = dispositivo.Procesar(Paquete);
             Resultados.Add(resultado);
-            LatenciaTotal += resultado.Latencia;
+            latenciaMsTotal += resultado.latenciaMs;
         }
 
         if (!Paquete.Descartado)

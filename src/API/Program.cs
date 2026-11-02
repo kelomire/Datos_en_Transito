@@ -1,64 +1,124 @@
-﻿using Datos_en_Transito.Api.DTOs;
-using Datos_en_Transito.Api.Services;
+﻿using API.DTOs;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Servicios
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new()
-    {
-        Title = "Datos en Tránsito API",
-        Version = "v1",
-        Description = "API para gestión de viajes y transporte"
-    });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SimulacionRed API", Version = "v1" });
 });
-
-builder.Services.AddScoped<IViajeService, ViajeService>();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(options =>
+if (app.Environment.IsDevelopment())
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-    options.RoutePrefix = "swagger";
-});
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-app.MapGet("/", () => Results.Redirect("/swagger"));
-
-app.MapGet("/api/viajes", (IViajeService svc) =>
+// POST Dispositivos — SIN WithOpenApi
+app.MapPost("/api/dispositivos", (Dispositivos solicitud) =>
 {
-    var viajes = svc.ListarTodos();
-    return Results.Ok(viajes); // 200 OK + JSON
+    if (string.IsNullOrWhiteSpace(solicitud.Nombre) ||
+        string.IsNullOrWhiteSpace(solicitud.Tipo) ||
+        solicitud.LatenciaMs < 0)
+    {
+        return Results.BadRequest(new { error = "Datos inválidos" });
+    }
+
+    var nuevoId = Guid.NewGuid().ToString();
+
+    var respuesta = new
+    {
+        id = nuevoId,
+        nombre = solicitud.Nombre,
+        tipo = solicitud.Tipo,
+        latenciaMsMs = solicitud.LatenciaMs
+    };
+
+    return Results.Created($"/api/dispositivos/{nuevoId}", respuesta);
 })
-.WithName("ListarViajes")
-.WithSummary("Devuelve todos los viajes registrados")
-.Produces<IEnumerable<ViajeRespuesta>>(200);
+.WithName("CrearDispositivo");
 
-app.MapGet("/api/viajes/{id:int}", (int id, IViajeService svc) =>
+app.MapPost("/api/simulaciones", (SimulacionCrearActualizar solicitud, Almacenamiento datos) =>
 {
-    var viaje = svc.BuscarPorId(id);
-    return viaje is not null
-        ? Results.Ok(viaje)      // 200 OK
-        : Results.NotFound();   // 404 No encontrado
-})
-.WithName("ObtenerViaje")
-.WithSummary("Busca un viaje por su ID")
-.Produces<ViajeRespuesta>(200)
-.Produces(404);
+    // Validaciones
+    if (string.IsNullOrWhiteSpace(solicitud.IpOrigen) ||
+        string.IsNullOrWhiteSpace(solicitud.IpDestino) ||
+        solicitud.TamanioBytes <= 0 ||
+        solicitud.Ttl <= 0 ||
+        solicitud.DispositivoIds == null ||
+        solicitud.DispositivoIds.Count == 0)
+    {
+        return Results.BadRequest(new { error = "Datos inválidos" });
+    }
 
-app.MapPost("/api/viajes", (CrearViajeSolicitud dto, IViajeService svc) =>
-{
-    if (!dto.EsValido())
-        return Results.BadRequest("Datos inválidos"); // 400
+    // Verificar dispositivos
+    foreach (var idDisp in solicitud.DispositivoIds)
+    {
+        if (!datos.Dispositivos.ContainsKey(idDisp))
+            return Results.BadRequest(new { error = $"El dispositivo '{idDisp}' no existe" });
+    }
 
-    var creado = svc.Crear(dto);
-    return Results.Created($"/api/viajes/{creado.Id}", creado); // 201 ✅
+    // ✅ Variables declaradas correctamente
+    int latenciaTotalMs = 0;
+    int ttlActual = solicitud.Ttl;
+    string estado = "Completada";
+    var recorrido = new List<PasoRecorrido>();
+
+    foreach (var idDisp in solicitud.DispositivoIds)
+    {
+        var disp = datos.Dispositivos[idDisp];
+
+        // ✅ Orden correcto: sumar primero
+        latenciaTotalMs += disp.LatenciaMs;
+        ttlActual--;
+
+        recorrido.Add(new PasoRecorrido
+        {
+            Orden = recorrido.Count + 1,
+            DispositivoId = idDisp,
+            LatenciaAplicadaMs = disp.LatenciaMs,
+            TtlRestante = ttlActual
+        });
+
+        if (ttlActual <= 0)
+        {
+            estado = "Interrumpida por TTL agotado";
+            ttlActual = 0;
+            break;
+        }
+    }
+
+    // ✅ Crear simulación con Recorrido
+    var nuevoId = Guid.NewGuid().ToString();
+    var simulacion = new Simulacion
+    {
+        Id = nuevoId,
+        Origen = solicitud.IpOrigen,
+        Destino = solicitud.IpDestino,
+        TamanioBytes = solicitud.TamanioBytes,
+        Ttl = solicitud.Ttl,
+        DispositivoIds = solicitud.DispositivoIds,
+        Estado = estado,
+        TtlFinal = ttlActual,
+        LatenciaTotalMs = latenciaTotalMs,
+        Recorrido = recorrido // ✅ Ahora existe la propiedad
+    };
+
+    datos.Simulaciones[nuevoId] = simulacion;
+
+    return Results.Created($"/api/simulaciones/{nuevoId}", new
+    {
+        id = nuevoId,
+        estado = estado,
+        ttlFinal = ttlActual,
+        latenciaTotalMs = latenciaTotalMs
+    });
 })
-.WithName("CrearViaje")
-.WithSummary("Registra un nuevo viaje")
-.Produces<ViajeRespuesta>(201)
-.Produces(400);
+.WithName("CrearSimulacion");
 
 app.Run();

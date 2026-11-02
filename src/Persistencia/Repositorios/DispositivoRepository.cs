@@ -19,12 +19,12 @@ public class DispositivoRepository : IDispositivoRepository
         using var connection = _factory.CrearConexionEscritura();
 
         connection.Execute(
-            "INSERT INTO dispositivos(nombre,tipo,latencia) VALUES (@Nombre,@Tipo,@Latencia)",
+            "INSERT INTO dispositivos(nombre,tipo,latenciaMs) VALUES (@Nombre,@Tipo,@latenciaMs)",
             new
             {
                 dispositivo.Nombre,
                 Tipo = dispositivo.GetType().Name,
-                dispositivo.Latencia
+                dispositivo.latenciaMs
             });
     }
 
@@ -33,14 +33,14 @@ public class DispositivoRepository : IDispositivoRepository
         using var connection = _factory.CrearConexionLectura();
 
         var items = connection.Query<dynamic>(
-            "SELECT id,nombre,tipo,latencia FROM dispositivos");
+            "SELECT id,nombre,tipo,latenciaMs FROM dispositivos");
 
         return items.Select(x =>
             CrearDispositivo(
                 (int)x.id,
                 (string)x.nombre,
                 (string)x.tipo,
-                (int)x.latencia));
+                (int)x.latenciaMs));
     }
 
     public DispositivoRed ObtenerPorId(int id)
@@ -48,7 +48,7 @@ public class DispositivoRepository : IDispositivoRepository
         using var connection = _factory.CrearConexionLectura();
 
         var item = connection.QueryFirstOrDefault<dynamic>(
-            "SELECT id,nombre,tipo,latencia FROM dispositivos WHERE id=@id",
+            "SELECT id,nombre,tipo,latenciaMs FROM dispositivos WHERE id=@id",
             new { id });
 
         if (item == null)
@@ -58,28 +58,28 @@ public class DispositivoRepository : IDispositivoRepository
             (int)item.id,
             (string)item.nombre,
             (string)item.tipo,
-            (int)item.latencia);
+            (int)item.latenciaMs);
     }
 
     private static DispositivoRed CrearDispositivo(
         int id,
         string nombre,
         string tipo,
-        int latencia)
+        int latenciaMs)
     {
         return tipo switch
         {
             nameof(Router) =>
-                new Router(id, nombre, latencia),
+                new Router(id, nombre, latenciaMs),
 
             nameof(Switch) =>
-                new Switch(id, nombre, latencia),
+                new Switch(id, nombre, latenciaMs),
 
             nameof(AccessPoint) =>
-                new AccessPoint(id, nombre, latencia),
+                new AccessPoint(id, nombre, latenciaMs),
 
             nameof(Firewall) =>
-                new Firewall(id, nombre, latencia),
+                new Firewall(id, nombre, latenciaMs),
 
             _ => throw new InvalidOperationException(
                 $"Tipo de dispositivo desconocido: {tipo}")
