@@ -1,92 +1,73 @@
-using Persistencia;
-using Aplicacion;
+using Persistencia;   // ✅ Repositorio está acá
+using Aplicacion;      // ✅ ServicioB está acá
 using Xunit;
 
-namespace Aplicacion
+namespace Tests
 {
     public class ServicioBTests
     {
-        private readonly Repositorio repositorio;
-
-        public ServicioB(Repositorio repositorio)
+        [Fact]
+        public void Simulacion_SumalatenciaMsDeTodosLosDispositivos()
         {
-            this.repositorio = repositorio;
+            var repositorio = new Repositorio();
+            repositorio.Dispositivos.Add(new Dispositivo { Id = "d1", LatenciaMs = 1 });
+            repositorio.Dispositivos.Add(new Dispositivo { Id = "d2", LatenciaMs = 3 });
+            repositorio.Dispositivos.Add(new Dispositivo { Id = "d3", LatenciaMs = 5 });
+
+            var servicio = new ServicioB(repositorio);
+            var datos = new SimulacionDatos
+            {
+                Origen = "A", Destino = "B",
+                TamanioBytes = 100,
+                Ttl = 10,
+                DispositivoIds = new List<string> { "d1", "d2", "d3" }
+            };
+
+            var resultado = servicio.Ejecutar(datos);
+
+            // Esperado: 1+3+5=9
+            Assert.Equal(9, resultado.LatenciaTotalMs);
         }
 
         [Fact]
-        public SimulacionResultado Ejecutar(SimulacionDatos datos)
+        public void Simulacion_SeDetieneAlDescartarYSumalatenciaMsHastaAhi()
         {
-            // ✅ Declarada UNA SOLA VEZ — FUERA del bucle
-            int latenciaTotalMs = 0;
-            int ttlActual = datos.Ttl;
-            string estado = "Completada";
-            var recorrido = new List<PasoRecorrido>();
-
-            foreach (var idDisp in datos.DispositivoIds)
+            var repositorio = new Repositorio();
+            var servicio = new ServicioB(repositorio);
+            var datos = new SimulacionDatos
             {
-                var dispositivo = repositorio.Dispositivos
-                    .FirstOrDefault(d => d.Id == idDisp);
-
-                if (dispositivo == null)
-                    continue;
-
-                // ✅ ORDEN CORRECTO: PRIMERO sumar
-                latenciaTotalMs += dispositivo.LatenciaMs;
-
-                // DESPUÉS restar TTL
-                ttlActual--;
-
-                recorrido.Add(new PasoRecorrido
-                {
-                    Orden = recorrido.Count + 1,
-                    DispositivoId = idDisp,
-                    LatenciaAplicadaMs = dispositivo.LatenciaMs,
-                    TtlRestante = ttlActual
-                });
-
-                if (ttlActual <= 0)
-                {
-                    estado = "Interrumpida por TTL agotado";
-                    ttlActual = 0;
-                    break;
-                }
-            }
-
-            return new SimulacionResultado
-            {
-                Id = System.Guid.NewGuid().ToString(),
-                Estado = estado,
-                TtlFinal = ttlActual,
-                LatenciaTotalMs = latenciaTotalMs, // ✅ Valor calculado
-                Recorrido = recorrido
+                Origen = "A", Destino = "B",
+                TamanioBytes = 50,
+                Ttl = 2,
+                DispositivoIds = new List<string> { "d1", "d2", "d3" }
             };
+
+            var resultado = servicio.Ejecutar(datos);
+
+            // Esperado: 1+3 = 4 → se detiene antes del tercero
+            Assert.Equal(4, resultado.LatenciaTotalMs);
         }
-       
-    }
 
-    public class SimulacionDatos
-    {
-        public string Origen { get; set; }
-        public string Destino { get; set; }
-        public int TamanioBytes { get; set; }
-        public int Ttl { get; set; }
-        public List<string> DispositivoIds { get; set; } = new();
-    }
+        [Fact]
+        public void Simulacion_DescartaPorTtlEnVariosRouters()
+        {
+            var repositorio = new Repositorio();
+            repositorio.Dispositivos.Add(new Dispositivo { Id = "r1", LatenciaMs = 2 });
+            repositorio.Dispositivos.Add(new Dispositivo { Id = "r2", LatenciaMs = 50 });
 
-    public class SimulacionResultado
-    {
-        public string Id { get; set; }
-        public string Estado { get; set; }
-        public int TtlFinal { get; set; }
-        public int LatenciaTotalMs { get; set; }
-        public List<PasoRecorrido> Recorrido { get; set; } = new();
-    }
+            var servicio = new ServicioB(repositorio);
+            var datos = new SimulacionDatos
+            {
+                Origen = "O", Destino = "D",
+                TamanioBytes = 200,
+                Ttl = 1,
+                DispositivoIds = new List<string> { "r1", "r2" }
+            };
 
-    public class PasoRecorrido
-    {
-        public int Orden { get; set; }
-        public string DispositivoId { get; set; }
-        public int LatenciaAplicadaMs { get; set; }
-        public int TtlRestante { get; set; }
+            var resultado = servicio.Ejecutar(datos);
+
+            // Esperado: solo r1 → 2
+            Assert.Equal(2, resultado.LatenciaTotalMs);
+        }
     }
 }

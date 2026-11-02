@@ -1,6 +1,6 @@
 using System;
 
-public class Dispositivos
+public class Dispositivo
 {
     public int Id { get; set; }
     public string? Nombre { get; set; }
