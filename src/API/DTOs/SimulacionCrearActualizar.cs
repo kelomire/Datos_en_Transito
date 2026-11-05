@@ -1,14 +1,11 @@
-using System.Collections.Generic;
+namespace API.DTOs;
 
-namespace API.DTOs
+public class SimulacionCrearActualizar
 {
-    public class SimulacionCrearActualizar
-    {
-        public string? IpOrigen { get; set; }
-        public string? IpDestino { get; set; }
-        public int TamanioBytes { get; set; }
-        public int Ttl { get; set; }
-        // ✅ Inicializá la lista vacía
-        public List<string> DispositivoIds { get; set; } = new();
-    }
+    public string? Origen { get; set; }
+    public string? Destino { get; set; }
+    public int TamanioBytes { get; set; }
+    public int Ttl { get; set; }
+    public List<int> DispositivoIds { get; set; } = new();
 }
+

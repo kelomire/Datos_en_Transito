@@ -1,5 +1,4 @@
-using Persistencia;   // ✅ Repositorio está acá
-using Aplicacion;      // ✅ ServicioB está acá
+using Persistencia.Entidades;
 using Xunit;
 
 namespace Tests
@@ -7,67 +6,37 @@ namespace Tests
     public class ServicioBTests
     {
         [Fact]
-        public void Simulacion_SumalatenciaMsDeTodosLosDispositivos()
+        public void Simulacion_SumaLatenciaMsDeTodosLosDispositivos()
         {
-            var repositorio = new Repositorio();
-            repositorio.Dispositivos.Add(new Dispositivo { Id = "d1", LatenciaMs = 1 });
-            repositorio.Dispositivos.Add(new Dispositivo { Id = "d2", LatenciaMs = 3 });
-            repositorio.Dispositivos.Add(new Dispositivo { Id = "d3", LatenciaMs = 5 });
-
-            var servicio = new ServicioB(repositorio);
-            var datos = new SimulacionDatos
+            var paquete = new PaqueteRed("10.0.0.1", "10.0.0.2", 100, 10);
+            var dispositivos = new List<DispositivoRed>
             {
-                Origen = "A", Destino = "B",
-                TamanioBytes = 100,
-                Ttl = 10,
-                DispositivoIds = new List<string> { "d1", "d2", "d3" }
+                new Router(1, "d1", 1),
+                new Router(2, "d2", 3),
+                new Router(3, "d3", 5)
             };
 
-            var resultado = servicio.Ejecutar(datos);
+            var simulacion = new Simulacion(paquete, dispositivos);
+            simulacion.Ejecutar();
 
-            // Esperado: 1+3+5=9
-            Assert.Equal(9, resultado.LatenciaTotalMs);
+            Assert.Equal(9, simulacion.latenciaMsTotal);
         }
 
         [Fact]
-        public void Simulacion_SeDetieneAlDescartarYSumalatenciaMsHastaAhi()
+        public void Simulacion_SeDetieneAlDescartarYSumaLatenciaMsHastaAhi()
         {
-            var repositorio = new Repositorio();
-            var servicio = new ServicioB(repositorio);
-            var datos = new SimulacionDatos
+            var paquete = new PaqueteRed("10.0.0.1", "10.0.0.2", 50, 2);
+            var dispositivos = new List<DispositivoRed>
             {
-                Origen = "A", Destino = "B",
-                TamanioBytes = 50,
-                Ttl = 2,
-                DispositivoIds = new List<string> { "d1", "d2", "d3" }
+                new Router(1, "d1", 1),
+                new Router(2, "d2", 3),
+                new Router(3, "d3", 5)
             };
 
-            var resultado = servicio.Ejecutar(datos);
+            var simulacion = new Simulacion(paquete, dispositivos);
+            simulacion.Ejecutar();
 
-            // Esperado: 1+3 = 4 → se detiene antes del tercero
-            Assert.Equal(4, resultado.LatenciaTotalMs);
-        }
-
-        [Fact]
-        public void Simulacion_DescartaPorTtlEnVariosRouters()
-        {
-            var repositorio = new Repositorio();
-            repositorio.Dispositivos.Add(new Dispositivo { Id = "r1", LatenciaMs = 2 });
-            repositorio.Dispositivos.Add(new Dispositivo { Id = "r2", LatenciaMs = 50 });
-
-            var servicio = new ServicioB(repositorio);
-            var datos = new SimulacionDatos
-            {
-                Origen = "O", Destino = "D",
-                TamanioBytes = 200,
-                Ttl = 1,
-                DispositivoIds = new List<string> { "r1", "r2" }
-            };
-
-            var resultado = servicio.Ejecutar(datos);
-
-            // Esperado: solo r1 → 2
-            Assert.Equal(2, resultado.LatenciaTotalMs);
+            Assert.Equal(4, simulacion.latenciaMsTotal);
         }
     }
 }

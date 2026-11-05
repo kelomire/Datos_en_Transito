@@ -12,7 +12,7 @@ public abstract class DispositivoRed
 
         Id = id;
         Nombre = nombre;
-        latenciaMs = latenciaMs;
+        this.latenciaMs = latenciaMs;
     }
 
 #pragma warning disable CS0436 // El tipo entra en conflicto con un tipo importado
