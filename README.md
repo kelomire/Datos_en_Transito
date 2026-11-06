@@ -19,25 +19,7 @@ Este repositorio contiene una solución .NET para simular el recorrido de un paq
 
 ## Preparación de la base de datos
 
-1. Crear la base y las tablas:
-
-```bash
-mysql -u root -p < scripts/01_crear_tablas.sql
-```
-
-2. Crear los usuarios:
-
-```bash
-mysql -u root -p < scripts/03_crear_usuarios.sql
-```
-
-3. Restaurar el backup de ejemplo:
-
-```bash
-mysql -u root -p datos_transito < backup/datos-en-transito.sql
-```
-
-> El backup no incluye contraseñas ni secretos. Las credenciales reales deben mantenerse fuera del repositorio y cargarse con variables de entorno o secretos locales.
+Para revisar la base existente, inicializar una base vacía, configurar credenciales, iniciar Swagger, probar los endpoints o restaurar el backup, seguí la [guía de uso de API y base de datos](Docs/guia-api-base-datos.md). No ejecutes el backup sobre tablas que ya existen: contiene DDL no idempotente.
 
 ## Variables de entorno recomendadas
 
@@ -53,7 +35,7 @@ export DB_USER_READONLY=desarrollo
 export DB_PASSWORD_READONLY='clave-del-usuario-desarrollo'
 ```
 
-La API usa `administrador` para escrituras y el usuario configurado en `DB_USER_READONLY` para consultas. Los valores predeterminados de usuarios coinciden con `scripts/03_crear_usuarios.sql`; define las contraseñas en el entorno y no las guardes en el repositorio. También se aceptan `DER_ADMIN_PASSWORD` y `DER_INVITADO_PASSWORD` por compatibilidad.
+La API usa `DB_USER_ADMIN` para escrituras y `DB_USER_READONLY` para consultas. Los valores predeterminados son `administrador` y `desarrollo`; define contraseñas en el entorno y no las guardes en el repositorio. También se aceptan `DER_ADMIN_PASSWORD` y `DER_INVITADO_PASSWORD` por compatibilidad. Para usar la cuenta institucional `5to_agbd`, ver los comandos de la guía.
 
 La persistencia de esta API usa MySQL con Dapper y las tablas de `scripts/01_crear_tablas.sql`; no requiere Entity Framework ni `dotnet ef migrations`.
 
@@ -67,13 +49,13 @@ dotnet run --project src/API/API.csproj
 
 La API queda disponible en:
 
-- Swagger UI: http://localhost:5000/swagger
-- API base: http://localhost:5000
+- Swagger UI: http://localhost:8080/swagger
+- API base: http://localhost:8080
 
 ## Ejecutar pruebas
 
 ```bash
-dotnet test --nologo
+dotnet test src/Tests/Tests.csproj
 ```
 
 ## Regla principal del dominio
@@ -104,16 +86,12 @@ La lógica de simulación se resuelve con polimorfismo:
 - Simulaciones: `GET` y `POST /api/simulaciones`, `GET`, `PUT` y `DELETE /api/simulaciones/{id}`.
 - Pasos del recorrido: `PUT` y `DELETE /api/simulaciones/{id}/pasos/{orden}`. Al modificar o borrar un paso se vuelve a calcular y guardar el recorrido completo. No se permite borrar el último paso.
 
-## Descripción de permisos
-
-- `administrador`: acceso completo a la base para escribir, actualizar y administrar estructura.
-- `invitado`: lectura restringida (`SELECT`) para consultas sin permisos de modificación.
-
 ## Sugerencias de seguridad
 
 - No versionar contraseñas reales.
 - Mantener la configuración sensible en variables de entorno o secrets locales.
 - Usar `appsettings.Development.json` sólo con valores no productivos.
+- El script de usuarios contiene credenciales de ejemplo y concede privilegios amplios al administrador; cambiarlas y restringir permisos antes de cualquier uso real.
 
 ## Estado de la tarea
 
