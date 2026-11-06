@@ -23,7 +23,11 @@ public sealed class MySqlConnectionFactory : IDbConnectionFactory
     private static string ConClave(string cadena, string variable)
     {
         var clave = Environment.GetEnvironmentVariable(variable)
-            ?? throw new InvalidOperationException($"Falta la variable de entorno {variable}.");
+            ?? Environment.GetEnvironmentVariable(variable == "DER_ADMIN_PASSWORD"
+                ? "DB_PASSWORD_ADMIN"
+                : "DB_PASSWORD_READONLY")
+            ?? throw new InvalidOperationException(
+                $"Falta la variable de entorno {variable} (o su alternativa DB_PASSWORD correspondiente).");
         return new MySqlConnectionStringBuilder(cadena) { Password = clave }.ConnectionString;
     }
 }

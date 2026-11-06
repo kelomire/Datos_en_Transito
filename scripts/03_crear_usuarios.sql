@@ -7,7 +7,10 @@ IDENTIFIED BY 'Desarrollo1234!';
 GRANT ALL PRIVILEGES ON *.* 
 TO 'administrador'@'localhost';
 
-GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE
+REVOKE ALL PRIVILEGES, GRANT OPTION
+FROM 'desarrollo'@'localhost';
+
+GRANT SELECT
 ON datos_transito.*
 TO 'desarrollo'@'localhost';
 

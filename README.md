@@ -22,13 +22,13 @@ Este repositorio contiene una solución .NET para simular el recorrido de un paq
 1. Crear la base y las tablas:
 
 ```bash
-mysql -u root -p < scripts/DDL.sql
+mysql -u root -p < scripts/01_crear_tablas.sql
 ```
 
-2. Crear los usuarios con permisos limitados:
+2. Crear los usuarios:
 
 ```bash
-mysql -u root -p < scripts/USUARIOS.sql
+mysql -u root -p < scripts/03_crear_usuarios.sql
 ```
 
 3. Restaurar el backup de ejemplo:
@@ -48,10 +48,14 @@ export DB_HOST=localhost
 export DB_PORT=3306
 export DB_NAME=datos_transito
 export DB_USER_ADMIN=administrador
-export DB_PASSWORD_ADMIN='CambiarPorUnaClaveSegura'
-export DB_USER_READONLY=invitado
-export DB_PASSWORD_READONLY='CambiarPorUnaClaveSegura'
+export DB_PASSWORD_ADMIN='clave-del-usuario-administrador'
+export DB_USER_READONLY=desarrollo
+export DB_PASSWORD_READONLY='clave-del-usuario-desarrollo'
 ```
+
+La API usa `administrador` para escrituras y el usuario configurado en `DB_USER_READONLY` para consultas. Los valores predeterminados de usuarios coinciden con `scripts/03_crear_usuarios.sql`; define las contraseñas en el entorno y no las guardes en el repositorio. También se aceptan `DER_ADMIN_PASSWORD` y `DER_INVITADO_PASSWORD` por compatibilidad.
+
+La persistencia de esta API usa MySQL con Dapper y las tablas de `scripts/01_crear_tablas.sql`; no requiere Entity Framework ni `dotnet ef migrations`.
 
 ## Ejecutar la API
 
@@ -86,17 +90,19 @@ La lógica de simulación se resuelve con polimorfismo:
 
 ```json
 {
-  "ipOrigen": "10.0.0.1",
-  "ipDestino": "10.0.0.2",
+  "origen": "10.0.0.1",
+  "destino": "10.0.0.2",
   "tamanoBytes": 1200,
   "ttl": 5,
-  "dispositivos": [
-    { "id": 1, "nombre": "router-principal", "tipo": "Router", "latenciaMs": 2 },
-    { "id": 2, "nombre": "switch-core", "tipo": "Switch", "latenciaMs": 1 },
-    { "id": 3, "nombre": "fw-perimetral", "tipo": "Firewall", "latenciaMs": 3 }
-  ]
+  "dispositivoIds": [1, 2, 3]
 }
 ```
+
+## Rutas principales para la demostración
+
+- Dispositivos: `GET` y `POST /api/dispositivos`, `PUT` y `DELETE /api/dispositivos/{id}`.
+- Simulaciones: `GET` y `POST /api/simulaciones`, `GET`, `PUT` y `DELETE /api/simulaciones/{id}`.
+- Pasos del recorrido: `PUT` y `DELETE /api/simulaciones/{id}/pasos/{orden}`. Al modificar o borrar un paso se vuelve a calcular y guardar el recorrido completo. No se permite borrar el último paso.
 
 ## Descripción de permisos
 
@@ -111,4 +117,4 @@ La lógica de simulación se resuelve con polimorfismo:
 
 ## Estado de la tarea
 
-La solución actual incluye la lógica de dominio, pruebas unitarias y el armazón de la API con Swagger. El proyecto está listo para ampliarse con más endpoints y persistencia real en MySQL según el diseño del plan pedagógico.
+La API usa MySQL mediante Dapper. Las pruebas unitarias cubren las reglas de dominio; no sustituyen una prueba de integración contra un servidor MySQL configurado.
