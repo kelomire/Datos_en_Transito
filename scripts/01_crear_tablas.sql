@@ -38,3 +38,30 @@ CREATE TABLE IF NOT EXISTS recorridos (
     FOREIGN KEY (simulacion_id) REFERENCES simulaciones(id),
     FOREIGN KEY (dispositivo_id) REFERENCES dispositivos(id)
 );
+
+insert INTO dispositivos (nombre, tipo, latenciaMs)
+values
+("router 1", "router", 10),
+("switch 1", "switch", 5),
+("firewall 1", "firewall", 15),
+("router 2", "router", 12),
+("switch 2", "switch", 7),
+("firewall 2", "firewall", 20);
+
+insert INTO paquetes (ip_origen, ip_destino, tamano_bytes, ttl_inicial)
+values
+("192.168.1.1", "192.168.1.2", 1500, 64),
+("192.168.1.2", "192.168.1.5", 1500, 64);
+
+insert INTO simulaciones (paquete_id, latenciaMs_total, ttl_final, entregado, descartado)
+values
+(1, 0, 64, true, false),
+(2, 0, 64, true, false);
+
+insert INTO recorridos (simulacion_id, dispositivo_id, latenciaMs, ttl_final, entregado, descartado)
+values
+(1, 1, 10, 64, true, false),
+(1, 2, 5, 64, true, false),
+(1, 3, 15, 64, true, false),
+(2, 4, 12, 64, true, false),
+(2, 5, 7, 64, true, false);

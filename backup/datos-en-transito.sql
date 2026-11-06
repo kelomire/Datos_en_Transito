@@ -36,7 +36,7 @@ CREATE TABLE `dispositivos` (
   `tipo` varchar(50) NOT NULL,
   `latenciaMs` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,6 +45,7 @@ CREATE TABLE `dispositivos` (
 
 LOCK TABLES `dispositivos` WRITE;
 /*!40000 ALTER TABLE `dispositivos` DISABLE KEYS */;
+INSERT INTO `dispositivos` VALUES (1,'router 1','router',10),(2,'switch 1','switch',5),(3,'firewall 1','firewall',15),(4,'router 2','router',12),(5,'switch 2','switch',7),(6,'firewall 2','firewall',20);
 /*!40000 ALTER TABLE `dispositivos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -62,7 +63,7 @@ CREATE TABLE `paquetes` (
   `tamano_bytes` int NOT NULL,
   `ttl_inicial` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,6 +72,7 @@ CREATE TABLE `paquetes` (
 
 LOCK TABLES `paquetes` WRITE;
 /*!40000 ALTER TABLE `paquetes` DISABLE KEYS */;
+INSERT INTO `paquetes` VALUES (1,'192.168.1.1','192.168.1.2',1500,64),(2,'192.168.1.2','192.168.1.5',1500,64);
 /*!40000 ALTER TABLE `paquetes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +96,7 @@ CREATE TABLE `recorridos` (
   KEY `dispositivo_id` (`dispositivo_id`),
   CONSTRAINT `recorridos_ibfk_1` FOREIGN KEY (`simulacion_id`) REFERENCES `simulaciones` (`id`),
   CONSTRAINT `recorridos_ibfk_2` FOREIGN KEY (`dispositivo_id`) REFERENCES `dispositivos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,6 +105,7 @@ CREATE TABLE `recorridos` (
 
 LOCK TABLES `recorridos` WRITE;
 /*!40000 ALTER TABLE `recorridos` DISABLE KEYS */;
+INSERT INTO `recorridos` VALUES (1,1,1,10,64,1,0),(2,1,2,5,64,1,0),(3,1,3,15,64,1,0),(4,2,4,12,64,1,0),(5,2,5,7,64,1,0);
 /*!40000 ALTER TABLE `recorridos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -124,7 +127,7 @@ CREATE TABLE `simulaciones` (
   PRIMARY KEY (`id`),
   KEY `paquete_id` (`paquete_id`),
   CONSTRAINT `simulaciones_ibfk_1` FOREIGN KEY (`paquete_id`) REFERENCES `paquetes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,6 +136,7 @@ CREATE TABLE `simulaciones` (
 
 LOCK TABLES `simulaciones` WRITE;
 /*!40000 ALTER TABLE `simulaciones` DISABLE KEYS */;
+INSERT INTO `simulaciones` VALUES (1,1,0,64,1,0,'2026-11-06 10:45:37'),(2,2,0,64,1,0,'2026-11-06 10:45:37');
 /*!40000 ALTER TABLE `simulaciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -266,4 +270,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-06 10:13:40
+-- Dump completed on 2026-11-06 10:46:59
