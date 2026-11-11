@@ -16,7 +16,7 @@ public class Router : DispositivoRed
         {
             DispositivoId = Id,
             TipoDispositivo = nameof(Router),
-            latenciaMs = latenciaMs,
+            LatenciaMs = latenciaMs,
             TtlFinal = paquete.Ttl,
             Entregado = paquete.Entregado,
             Descartado = paquete.Descartado

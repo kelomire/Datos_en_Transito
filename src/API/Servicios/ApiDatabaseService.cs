@@ -234,7 +234,7 @@ public sealed class ApiDatabaseService
             DispositivoId = resultado.DispositivoId,
             Nombre = dispositivos.First(d => d.Id == resultado.DispositivoId).Nombre ?? string.Empty,
             Tipo = resultado.TipoDispositivo,
-            LatenciaAplicadaMs = resultado.latenciaMs,
+            LatenciaAplicadaMs = resultado.LatenciaMs,
             TtlRestante = resultado.TtlFinal
         }).ToList();
 
@@ -247,7 +247,7 @@ public sealed class ApiDatabaseService
             Ttl = ttl,
             Estado = paquete.Descartado ? "descartado" : "entregado",
             TtlFinal = paquete.Ttl,
-            LatenciaTotalMs = simulacionDominio.latenciaMsTotal,
+            LatenciaTotalMs = simulacionDominio.LatenciaMsTotal,
             Recorrido = pasos
         };
     }

@@ -12,7 +12,7 @@ public class Switch : DispositivoRed
         {
             DispositivoId = Id,
             TipoDispositivo = nameof(Switch),
-            latenciaMs = latenciaMs,
+            LatenciaMs = latenciaMs,
             TtlFinal = paquete.Ttl,
             Entregado = paquete.Entregado,
             Descartado = paquete.Descartado

@@ -26,7 +26,7 @@ public class SimulacionRepository : ISimulacionRepository
                 IpDestino = simulacion.Paquete.IpDestino,
                 Tamano = simulacion.Paquete.TamanoBytes,
                 Ttl = simulacion.Paquete.Ttl,
-                latenciaMs = simulacion.latenciaMsTotal,
+                latenciaMs = simulacion.LatenciaMsTotal,
                 Entregado = simulacion.Paquete.Entregado,
                 Descartado = simulacion.Paquete.Descartado
             },

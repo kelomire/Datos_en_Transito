@@ -21,7 +21,7 @@ public class Firewall : DispositivoRed, IFiltrador
         {
             DispositivoId = Id,
             TipoDispositivo = nameof(Firewall),
-            latenciaMs = latenciaMs,
+            LatenciaMs = latenciaMs,
             TtlFinal = paquete.Ttl,
             Entregado = paquete.Entregado,
             Descartado = paquete.Descartado
