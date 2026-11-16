@@ -77,39 +77,6 @@ INSERT INTO `paquetes` VALUES (1,'192.168.1.1','192.168.1.2',1500,64),(2,'192.16
 UNLOCK TABLES;
 
 --
--- Table structure for table `recorridos`
---
-
-DROP TABLE IF EXISTS `recorridos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `recorridos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `simulacion_id` int NOT NULL,
-  `dispositivo_id` int NOT NULL,
-  `latenciaMs` int NOT NULL,
-  `ttl_final` int NOT NULL,
-  `entregado` tinyint(1) NOT NULL,
-  `descartado` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `simulacion_id` (`simulacion_id`),
-  KEY `dispositivo_id` (`dispositivo_id`),
-  CONSTRAINT `recorridos_ibfk_1` FOREIGN KEY (`simulacion_id`) REFERENCES `simulaciones` (`id`),
-  CONSTRAINT `recorridos_ibfk_2` FOREIGN KEY (`dispositivo_id`) REFERENCES `dispositivos` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `recorridos`
---
-
-LOCK TABLES `recorridos` WRITE;
-/*!40000 ALTER TABLE `recorridos` DISABLE KEYS */;
-INSERT INTO `recorridos` VALUES (1,1,1,10,64,1,0),(2,1,2,5,64,1,0),(3,1,3,15,64,1,0),(4,2,4,12,64,1,0),(5,2,5,7,64,1,0);
-/*!40000 ALTER TABLE `recorridos` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `simulaciones`
 --
 
@@ -127,7 +94,7 @@ CREATE TABLE `simulaciones` (
   PRIMARY KEY (`id`),
   KEY `paquete_id` (`paquete_id`),
   CONSTRAINT `simulaciones_ibfk_1` FOREIGN KEY (`paquete_id`) REFERENCES `paquetes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +103,7 @@ CREATE TABLE `simulaciones` (
 
 LOCK TABLES `simulaciones` WRITE;
 /*!40000 ALTER TABLE `simulaciones` DISABLE KEYS */;
-INSERT INTO `simulaciones` VALUES (1,1,0,64,1,0,'2026-11-06 10:45:37'),(2,2,0,64,1,0,'2026-11-06 10:45:37');
+INSERT INTO `simulaciones` VALUES (1,1,0,64,1,0,'2026-11-06 10:45:37'),(2,2,0,64,1,0,'2026-11-06 10:45:37'),(3,1,0,64,1,0,'2026-11-16 09:07:24'),(4,2,0,64,1,0,'2026-11-16 09:07:24'),(5,5,30,3,1,0,'2026-11-16 09:11:57');
 /*!40000 ALTER TABLE `simulaciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -270,4 +237,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-06 10:46:59
+-- Dump completed on 2026-11-16  9:42:07
