@@ -248,7 +248,8 @@ Los datos enviados no tienen el formato o validación esperados.
 ## 14. Archivos relevantes
 
 - [src/API/Program.cs](../src/API/Program.cs)
-- [src/API/Servicios/ApiDatabaseService.cs](../src/API/Servicios/ApiDatabaseService.cs)
+- [src/Aplicacion/Servicios](../src/Aplicacion/Servicios)
+- [src/Persistencia/Repositorios](../src/Persistencia/Repositorios)
 - [src/Persistencia/MySqlConnectionFactory.cs](../src/Persistencia/MySqlConnectionFactory.cs)
 - [Docs/guia-ejecucion-api.md](./guia-ejecucion-api.md)
 

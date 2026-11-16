@@ -14,10 +14,10 @@ public class DispositivoRepository : IDispositivoRepository
         _factory = factory;
     }
 
-    public void Agregar(DispositivoRed dispositivo)
+    public int Agregar(DispositivoRed dispositivo)
     {
         using var connection = _factory.CrearConexionEscritura();
-
+        connection.Open();
         connection.Execute(
             "INSERT INTO dispositivos(nombre,tipo,latenciaMs) VALUES (@Nombre,@Tipo,@latenciaMs)",
             new
@@ -26,6 +26,48 @@ public class DispositivoRepository : IDispositivoRepository
                 Tipo = dispositivo.GetType().Name,
                 dispositivo.latenciaMs
             });
+        return connection.QuerySingle<int>("SELECT LAST_INSERT_ID()");
+    }
+
+    public bool Actualizar(DispositivoRed dispositivo)
+    {
+        using var connection = _factory.CrearConexionEscritura();
+        var existe = connection.ExecuteScalar<bool>(
+            "SELECT EXISTS(SELECT 1 FROM dispositivos WHERE id = @Id)", new { dispositivo.Id });
+        if (!existe)
+            return false;
+
+        connection.Execute(
+            "UPDATE dispositivos SET nombre = @Nombre, tipo = @Tipo, latenciaMs = @LatenciaMs WHERE id = @Id",
+            new
+            {
+                dispositivo.Id,
+                dispositivo.Nombre,
+                Tipo = dispositivo.GetType().Name,
+                LatenciaMs = dispositivo.latenciaMs
+            });
+        return true;
+    }
+
+    public ResultadoEliminacionDispositivo Eliminar(int id)
+    {
+        using var connection = _factory.CrearConexionEscritura();
+        connection.Open();
+        using var transaction = connection.BeginTransaction();
+
+        var existe = connection.ExecuteScalar<bool>(
+            "SELECT EXISTS(SELECT 1 FROM dispositivos WHERE id = @id)", new { id }, transaction);
+        if (!existe)
+            return ResultadoEliminacionDispositivo.NoExiste;
+
+        var enUso = connection.ExecuteScalar<bool>(
+            "SELECT EXISTS(SELECT 1 FROM recorridos WHERE dispositivo_id = @id)", new { id }, transaction);
+        if (enUso)
+            return ResultadoEliminacionDispositivo.EnUso;
+
+        connection.Execute("DELETE FROM dispositivos WHERE id = @id", new { id }, transaction);
+        transaction.Commit();
+        return ResultadoEliminacionDispositivo.Eliminado;
     }
 
     public IEnumerable<DispositivoRed> ObtenerTodos()
@@ -69,16 +111,16 @@ public class DispositivoRepository : IDispositivoRepository
     {
         return tipo switch
         {
-            nameof(Router) =>
+            var tipoNormalizado when string.Equals(tipoNormalizado, nameof(Router), StringComparison.OrdinalIgnoreCase) =>
                 new Router(id, nombre, latenciaMs),
 
-            nameof(Switch) =>
+            var tipoNormalizado when string.Equals(tipoNormalizado, nameof(Switch), StringComparison.OrdinalIgnoreCase) =>
                 new Switch(id, nombre, latenciaMs),
 
-            nameof(AccessPoint) =>
+            var tipoNormalizado when string.Equals(tipoNormalizado, nameof(AccessPoint), StringComparison.OrdinalIgnoreCase) =>
                 new AccessPoint(id, nombre, latenciaMs),
 
-            nameof(Firewall) =>
+            var tipoNormalizado when string.Equals(tipoNormalizado, nameof(Firewall), StringComparison.OrdinalIgnoreCase) =>
                 new Firewall(id, nombre, latenciaMs),
 
             _ => throw new InvalidOperationException(

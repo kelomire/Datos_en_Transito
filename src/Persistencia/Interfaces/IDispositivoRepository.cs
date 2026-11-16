@@ -6,5 +6,7 @@ public interface IDispositivoRepository
 {
     IEnumerable<DispositivoRed> ObtenerTodos();
     DispositivoRed? ObtenerPorId(int id);
-    void Agregar(DispositivoRed dispositivo);
+    int Agregar(DispositivoRed dispositivo);
+    bool Actualizar(DispositivoRed dispositivo);
+    ResultadoEliminacionDispositivo Eliminar(int id);
 }

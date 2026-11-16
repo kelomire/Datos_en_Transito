@@ -1,6 +1,6 @@
 # Guía de uso: API y base de datos
 
-Esta guía reúne la configuración y los pasos usados para ejecutar y demostrar Datos en Tránsito desde VS Code. La API está implementada con Minimal API en .NET 10, usa MySQL mediante Dapper y ofrece Swagger para probar las rutas.
+Esta guía reúne la configuración y los pasos usados para ejecutar y demostrar Datos en Tránsito desde VS Code. La API está implementada con Minimal API en .NET 10 y ofrece Swagger para probar las rutas. Los endpoints delegan los casos de uso a Aplicacion; sus servicios usan repositorios de Persistencia, que acceden a MySQL mediante Dapper.
 
 ## 1. Requisitos y terminales
 
@@ -132,6 +132,12 @@ Cuerpo de ejemplo para crear o actualizar:
 
 Tipos permitidos: `Router`, `Switch`, `Firewall`, `AccessPoint` (no distingue mayúsculas/minúsculas). La latencia debe ser mayor o igual a cero.
 
+### Estadísticas
+
+| Método y ruta | Uso | Respuestas típicas |
+|---|---|---|
+| `GET /api/estadisticas` | Consulta estadísticas generales de simulaciones | `200` |
+
 ### Simulaciones
 
 | Método y ruta | Uso | Respuestas típicas |
@@ -190,7 +196,7 @@ La simulación instancia el tipo concreto de cada dispositivo y llama polimórfi
 - `Switch`: deja continuar el paquete sin modificar TTL.
 - `Firewall`: descarta si el paquete supera 1500 bytes.
 
-La simulación deja de recorrer dispositivos cuando el paquete se descarta. La API usa Dapper para leer y escribir las tablas MySQL; la creación y actualización de simulaciones guardan los cambios relacionados dentro de una transacción. No usa Entity Framework ni requiere `dotnet ef migrations`. Los procedimientos almacenados del script no son necesarios para estas rutas activas.
+La simulación deja de recorrer dispositivos cuando el paquete se descarta. Los repositorios usan Dapper para leer y escribir las tablas MySQL; la creación y actualización de simulaciones guardan los cambios relacionados dentro de una transacción. La ruta de estadísticas usa `sp_estadisticas`. No se usa Entity Framework ni se requieren `dotnet ef migrations`.
 
 ## 9. Pruebas y estado de verificación
 

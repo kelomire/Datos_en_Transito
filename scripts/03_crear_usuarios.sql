@@ -14,4 +14,8 @@ GRANT SELECT
 ON datos_transito.*
 TO 'desarrollo'@'localhost';
 
+GRANT EXECUTE
+ON PROCEDURE datos_transito.sp_estadisticas
+TO 'desarrollo'@'localhost';
+
 FLUSH PRIVILEGES;

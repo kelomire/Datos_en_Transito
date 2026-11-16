@@ -19,7 +19,7 @@ namespace Tests
             var simulacion = new Simulacion(paquete, dispositivos);
             simulacion.Ejecutar();
 
-            Assert.Equal(9, simulacion.latenciaMsTotal);
+            Assert.Equal(9, simulacion.LatenciaMsTotal);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Tests
             var simulacion = new Simulacion(paquete, dispositivos);
             simulacion.Ejecutar();
 
-            Assert.Equal(4, simulacion.latenciaMsTotal);
+            Assert.Equal(4, simulacion.LatenciaMsTotal);
         }
     }
 }

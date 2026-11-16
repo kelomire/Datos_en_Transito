@@ -4,7 +4,9 @@ namespace Persistencia.Interfaces;
 
 public interface ISimulacionRepository
 {
-    void Registrar(Simulacion simulacion);
-    Simulacion? ObtenerPorId(int id);
-    IEnumerable<Simulacion> ObtenerTodas();
+    int Registrar(Simulacion simulacion);
+    bool Actualizar(int id, Simulacion simulacion);
+    SimulacionPersistida? ObtenerPorId(int id);
+    IEnumerable<SimulacionPersistida> ObtenerTodas();
+    bool Eliminar(int id);
 }

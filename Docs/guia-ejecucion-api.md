@@ -157,8 +157,9 @@ cd /home/et12alumno/Datos_en_Transito && export DB_HOST=localhost DB_PORT=3306 D
 ## 10. Archivos relevantes del proyecto
 
 - [src/API/Program.cs](../src/API/Program.cs)
+- [src/Aplicacion/Servicios](../src/Aplicacion/Servicios)
+- [src/Persistencia/Repositorios](../src/Persistencia/Repositorios)
 - [src/Persistencia/MySqlConnectionFactory.cs](../src/Persistencia/MySqlConnectionFactory.cs)
-- [src/API/Servicios/ApiDatabaseService.cs](../src/API/Servicios/ApiDatabaseService.cs)
 - [scripts/01_crear_tablas.sql](../scripts/01_crear_tablas.sql)
 - [README.md](../README.md)
 

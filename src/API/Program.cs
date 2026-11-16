@@ -1,8 +1,10 @@
+using Aplicacion.Servicios;
 using API.DTOs;
-using API.Servicios;
 using Datos_en_Transito.Persistencia;
 using Microsoft.OpenApi.Models;
 using MySqlConnector;
+using Persistencia.Interfaces;
+using Persistencia.Repositorios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +35,12 @@ static string BuildConnectionString(string host, uint port, string database, str
 builder.Services.AddSingleton<IDbConnectionFactory>(_ => new MySqlConnectionFactory(
     BuildConnectionString(host, port, name, adminUser),
     BuildConnectionString(host, port, name, readUser)));
-builder.Services.AddScoped<ApiDatabaseService>();
+builder.Services.AddScoped<IDispositivoRepository, DispositivoRepository>();
+builder.Services.AddScoped<ISimulacionRepository, SimulacionRepository>();
+builder.Services.AddScoped<IEstadisticaRepository, EstadisticaRepository>();
+builder.Services.AddScoped<DispositivoService>();
+builder.Services.AddScoped<SimulacionService>();
+builder.Services.AddScoped<EstadisticaService>();
 
 var app = builder.Build();
 
@@ -47,73 +54,59 @@ app.UseSwaggerUI(c =>
 app.MapGet("/swagger", () => Results.Redirect("/swagger/index.html"));
 app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
-app.MapGet("/api/dispositivos", (ApiDatabaseService databaseService) =>
-    Results.Ok(databaseService.ListarDispositivos().Select(d => new
+app.MapGet("/api/dispositivos", (DispositivoService service) =>
+    Results.Ok(service.Listar().Select(dispositivo => new
     {
-        d.Id,
-        d.Nombre,
-        d.Tipo,
-        d.LatenciaMs
+        dispositivo.Id,
+        dispositivo.Nombre,
+        Tipo = dispositivo.GetType().Name,
+        LatenciaMs = dispositivo.latenciaMs
     })));
 
-app.MapPost("/api/dispositivos", (DispositivoCrearActualizar request, ApiDatabaseService databaseService) =>
+app.MapPost("/api/dispositivos", (DispositivoCrearActualizar request, DispositivoService service) =>
 {
-    if (request is null)
-        return Results.BadRequest(new { error = "El cuerpo de la solicitud es obligatorio." });
-    if (string.IsNullOrWhiteSpace(request.Nombre))
-        return Results.BadRequest(new { error = "El nombre es obligatorio." });
-    if (string.IsNullOrWhiteSpace(request.Tipo))
-        return Results.BadRequest(new { error = "El tipo es obligatorio." });
-    if (request.LatenciaMs < 0)
-        return Results.BadRequest(new { error = "La latencia debe ser mayor o igual a cero." });
+    var error = ValidarDispositivo(request);
+    if (error is not null)
+        return Results.BadRequest(new { error });
 
-    var tipo = CanonicalizarTipo(request.Tipo);
-    if (tipo is null)
-        return Results.BadRequest(new { error = $"Tipo de dispositivo no soportado: {request.Tipo.Trim()}." });
-
-    var nombre = request.Nombre.Trim();
-    var id = databaseService.CrearDispositivo(nombre, tipo, request.LatenciaMs);
+    var tipo = CanonicalizarTipo(request.Tipo!)!;
+    var nombre = request.Nombre!.Trim();
+    var id = service.Registrar(nombre, tipo, request.LatenciaMs);
     return Results.Created($"/api/dispositivos/{id}", new { Id = id, Nombre = nombre, Tipo = tipo, request.LatenciaMs });
 });
 
-app.MapPut("/api/dispositivos/{id:int}", (int id, DispositivoCrearActualizar request, ApiDatabaseService databaseService) =>
+app.MapPut("/api/dispositivos/{id:int}", (int id, DispositivoCrearActualizar request, DispositivoService service) =>
 {
-    if (request is null)
-        return Results.BadRequest(new { error = "El cuerpo de la solicitud es obligatorio." });
-    if (string.IsNullOrWhiteSpace(request.Nombre))
-        return Results.BadRequest(new { error = "El nombre es obligatorio." });
-    if (string.IsNullOrWhiteSpace(request.Tipo))
-        return Results.BadRequest(new { error = "El tipo es obligatorio." });
-    if (request.LatenciaMs < 0)
-        return Results.BadRequest(new { error = "La latencia debe ser mayor o igual a cero." });
+    var error = ValidarDispositivo(request);
+    if (error is not null)
+        return Results.BadRequest(new { error });
 
-    var tipo = CanonicalizarTipo(request.Tipo);
-    if (tipo is null)
-        return Results.BadRequest(new { error = $"Tipo de dispositivo no soportado: {request.Tipo.Trim()}." });
-
-    var nombre = request.Nombre.Trim();
-    if (!databaseService.ActualizarDispositivo(id, nombre, tipo, request.LatenciaMs))
+    var tipo = CanonicalizarTipo(request.Tipo!)!;
+    var nombre = request.Nombre!.Trim();
+    if (!service.Actualizar(id, nombre, tipo, request.LatenciaMs))
         return Results.NotFound(new { error = $"No existe el dispositivo con id {id}." });
 
     return Results.Ok(new { Id = id, Nombre = nombre, Tipo = tipo, request.LatenciaMs });
 });
 
-app.MapDelete("/api/dispositivos/{id:int}", (int id, ApiDatabaseService databaseService) =>
+app.MapDelete("/api/dispositivos/{id:int}", (int id, DispositivoService service) =>
 {
-    if (databaseService.ObtenerDispositivo(id) is null)
-        return Results.NotFound(new { error = $"No existe el dispositivo con id {id}." });
-    if (!databaseService.EliminarDispositivo(id))
-        return Results.Conflict(new { error = "El dispositivo está referenciado por un recorrido guardado." });
-    return Results.NoContent();
+    var resultado = service.Eliminar(id);
+    return resultado switch
+    {
+        ResultadoEliminacionDispositivo.Eliminado => Results.NoContent(),
+        ResultadoEliminacionDispositivo.EnUso => Results.Conflict(new { error = "El dispositivo está referenciado por un recorrido guardado." }),
+        _ => Results.NotFound(new { error = $"No existe el dispositivo con id {id}." })
+    };
 });
 
-app.MapPost("/api/simulaciones", (SimulacionCrearActualizar request, ApiDatabaseService databaseService) =>
+app.MapPost("/api/simulaciones", (SimulacionCrearActualizar request, SimulacionService service) =>
 {
     var error = ValidarSimulacion(request);
     if (error is not null)
         return Results.BadRequest(new { error });
 
-    var simulacion = databaseService.EjecutarSimulacion(
+    var simulacion = service.Ejecutar(
         request.Origen!.Trim(), request.Destino!.Trim(), request.TamanioBytes, request.Ttl, request.DispositivoIds);
     if (simulacion is null)
         return Results.BadRequest(new { error = "Uno o más dispositivos del recorrido no existen." });
@@ -127,45 +120,38 @@ app.MapPost("/api/simulaciones", (SimulacionCrearActualizar request, ApiDatabase
     });
 });
 
-app.MapGet("/api/simulaciones/{id:int}", (int id, ApiDatabaseService databaseService) =>
+app.MapGet("/api/simulaciones/{id:int}", (int id, SimulacionService service) =>
 {
-    var simulacion = databaseService.ObtenerSimulacion(id);
+    var simulacion = service.Obtener(id);
     return simulacion is null
         ? Results.NotFound(new { error = $"No existe la simulación con id {id}." })
         : Results.Ok(simulacion);
 });
 
-app.MapGet("/api/simulaciones", (ApiDatabaseService databaseService) =>
-    Results.Ok(databaseService.ListarSimulaciones().Select(s => new
-    {
-        s.Id,
-        s.Estado,
-        s.TtlFinal,
-        s.LatenciaTotalMs
-    })));
+app.MapGet("/api/simulaciones", (SimulacionService service) => Results.Ok(service.Listar()));
 
-app.MapPut("/api/simulaciones/{id:int}", (int id, SimulacionCrearActualizar request, ApiDatabaseService databaseService) =>
+app.MapPut("/api/simulaciones/{id:int}", (int id, SimulacionCrearActualizar request, SimulacionService service) =>
 {
     var error = ValidarSimulacion(request);
     if (error is not null)
         return Results.BadRequest(new { error });
-    if (databaseService.ObtenerSimulacion(id) is null)
+    if (service.Obtener(id) is null)
         return Results.NotFound(new { error = $"No existe la simulación con id {id}." });
 
-    var simulacion = databaseService.EjecutarSimulacion(
-        request.Origen!.Trim(), request.Destino!.Trim(), request.TamanioBytes, request.Ttl, request.DispositivoIds, id);
+    var simulacion = service.Actualizar(
+        id, request.Origen!.Trim(), request.Destino!.Trim(), request.TamanioBytes, request.Ttl, request.DispositivoIds);
     if (simulacion is null)
         return Results.BadRequest(new { error = "Uno o más dispositivos del recorrido no existen." });
     return Results.Ok(simulacion);
 });
 
-app.MapDelete("/api/simulaciones/{id:int}", (int id, ApiDatabaseService databaseService) =>
-    databaseService.EliminarSimulacion(id)
+app.MapDelete("/api/simulaciones/{id:int}", (int id, SimulacionService service) =>
+    service.Eliminar(id)
         ? Results.NoContent()
         : Results.NotFound(new { error = $"No existe la simulación con id {id}." }));
 
 app.MapPut("/api/simulaciones/{id:int}/pasos/{orden:int}",
-    (int id, int orden, PasoActualizar request, ApiDatabaseService databaseService) =>
+    (int id, int orden, PasoActualizar request, DispositivoService dispositivoService, SimulacionService simulacionService) =>
 {
     if (request is null)
         return Results.BadRequest(new { error = "El cuerpo de la solicitud es obligatorio." });
@@ -174,31 +160,26 @@ app.MapPut("/api/simulaciones/{id:int}/pasos/{orden:int}",
     if (orden <= 0)
         return Results.BadRequest(new { error = "El orden debe ser mayor que cero." });
 
-    var simulacion = databaseService.ObtenerSimulacion(id);
+    var simulacion = simulacionService.Obtener(id);
     if (simulacion is null)
         return Results.NotFound(new { error = $"No existe la simulación con id {id}." });
-    if (databaseService.ObtenerDispositivo(request.DispositivoId) is null)
+    if (dispositivoService.Obtener(request.DispositivoId) is null)
         return Results.NotFound(new { error = $"No existe el dispositivo con id {request.DispositivoId}." });
     if (orden > simulacion.Recorrido.Count)
         return Results.BadRequest(new { error = "El orden del paso indicado no existe en la simulación." });
 
-    var ids = simulacion.Recorrido.Select(p => p.DispositivoId).ToList();
-    ids[orden - 1] = request.DispositivoId;
-    var actualizada = databaseService.EjecutarSimulacion(
-        simulacion.Origen, simulacion.Destino, simulacion.TamanioBytes, simulacion.Ttl, ids, id);
-
+    var actualizada = simulacionService.ActualizarPaso(id, orden, request.DispositivoId);
     return actualizada is null
         ? Results.NotFound(new { error = $"No existe la simulación con id {id}." })
         : Results.Ok(actualizada);
 });
 
-app.MapDelete("/api/simulaciones/{id:int}/pasos/{orden:int}",
-    (int id, int orden, ApiDatabaseService databaseService) =>
+app.MapDelete("/api/simulaciones/{id:int}/pasos/{orden:int}", (int id, int orden, SimulacionService service) =>
 {
     if (orden <= 0)
         return Results.BadRequest(new { error = "El orden debe ser mayor que cero." });
 
-    var simulacion = databaseService.ObtenerSimulacion(id);
+    var simulacion = service.Obtener(id);
     if (simulacion is null)
         return Results.NotFound(new { error = $"No existe la simulación con id {id}." });
     if (orden > simulacion.Recorrido.Count)
@@ -206,17 +187,30 @@ app.MapDelete("/api/simulaciones/{id:int}/pasos/{orden:int}",
     if (simulacion.Recorrido.Count == 1)
         return Results.BadRequest(new { error = "El recorrido debe conservar al menos un dispositivo." });
 
-    var ids = simulacion.Recorrido.Select(p => p.DispositivoId).ToList();
-    ids.RemoveAt(orden - 1);
-    var actualizada = databaseService.EjecutarSimulacion(
-        simulacion.Origen, simulacion.Destino, simulacion.TamanioBytes, simulacion.Ttl, ids, id);
-
+    var actualizada = service.EliminarPaso(id, orden);
     return actualizada is null
         ? Results.NotFound(new { error = $"No existe la simulación con id {id}." })
         : Results.Ok(actualizada);
 });
 
+app.MapGet("/api/estadisticas", (EstadisticaService service) => Results.Ok(service.Obtener()));
+
 app.Run();
+
+static string? ValidarDispositivo(DispositivoCrearActualizar? request)
+{
+    if (request is null)
+        return "El cuerpo de la solicitud es obligatorio.";
+    if (string.IsNullOrWhiteSpace(request.Nombre))
+        return "El nombre es obligatorio.";
+    if (string.IsNullOrWhiteSpace(request.Tipo))
+        return "El tipo es obligatorio.";
+    if (request.LatenciaMs < 0)
+        return "La latencia debe ser mayor o igual a cero.";
+    if (CanonicalizarTipo(request.Tipo) is null)
+        return $"Tipo de dispositivo no soportado: {request.Tipo.Trim()}.";
+    return null;
+}
 
 static string? ValidarSimulacion(SimulacionCrearActualizar? request)
 {

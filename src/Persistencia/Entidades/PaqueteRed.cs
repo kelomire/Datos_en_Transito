@@ -5,6 +5,7 @@ public class PaqueteRed
     public string IpOrigen { get; set; }
     public string IpDestino { get; set; }
     public int TamanoBytes { get; set; }
+    public int TtlInicial { get; }
     public int Ttl { get; set; }
     public bool Entregado { get; set; }
     public bool Descartado { get; set; }
@@ -19,6 +20,7 @@ public class PaqueteRed
         IpOrigen = ipOrigen;
         IpDestino = ipDestino;
         TamanoBytes = tamanoBytes;
+        TtlInicial = ttl;
         Ttl = ttl;
     }
 }
