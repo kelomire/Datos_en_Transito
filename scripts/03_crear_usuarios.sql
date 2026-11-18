@@ -11,11 +11,11 @@ REVOKE ALL PRIVILEGES, GRANT OPTION
 FROM 'desarrollo'@'localhost';
 
 GRANT SELECT
-ON datos_transito.*
+ON 5to_datos_transito.*
 TO 'desarrollo'@'localhost';
 
 GRANT EXECUTE
-ON PROCEDURE datos_transito.sp_estadisticas
+ON PROCEDURE 5to_datos_transito.sp_estadisticas
 TO 'desarrollo'@'localhost';
 
 FLUSH PRIVILEGES;

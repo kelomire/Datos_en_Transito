@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS datos_transito;
-USE datos_transito;
+CREATE DATABASE IF NOT EXISTS 5to_datos_transito;
+USE 5to_datos_transito;
 
 CREATE TABLE IF NOT EXISTS dispositivos (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -1,4 +1,4 @@
-USE datos_transito;
+USE 5to_datos_transito;
 
 DROP PROCEDURE IF EXISTS sp_registrar_simulacion;
 
@@ -81,7 +81,7 @@ END//
 
 DELIMITER ;
 
-USE datos_transito;
+USE 5to_datos_transito;
 
 DROP PROCEDURE IF EXISTS sp_estadisticas_dispositivos;
 

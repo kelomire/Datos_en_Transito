@@ -1,0 +1,3 @@
+source 01_crear_tablas.sql
+source 02_procedimientos_almacenados.sql
+source 03_crear_usuarios.sql
