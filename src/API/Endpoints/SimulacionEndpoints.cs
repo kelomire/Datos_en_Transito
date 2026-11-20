@@ -10,7 +10,7 @@ namespace API.Endpoints;
 
 public static class SimulacionEndpoints
 {
-    public static void MapSimulacionEndpoints(this ISimulacionRepository app)
+    public static void MapSimulacionEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPost("/api/simulaciones", (SimulacionCrearActualizar request, SimulacionService service) =>
         {
@@ -79,7 +79,6 @@ public static class SimulacionEndpoints
             .WithTags("Estadísticas").WithSummary("Obtener estadísticas")
             .WithDescription("Devuelve las estadísticas generales. Ejemplo: `curl http://localhost:8080/api/estadisticas`");
 
-        app.Run();
 
         static string? ValidarSimulacion(SimulacionCrearActualizar? request)
         {
@@ -91,7 +90,6 @@ public static class SimulacionEndpoints
             if (request.DispositivoIds is null || request.DispositivoIds.Count == 0) return "Debe indicar al menos un dispositivo en el recorrido.";
             return null;
         }
-        static string? CanonicalizarTipo(string tipo) => new[] { "Router", "Switch", "Firewall", "AccessPoint" }.FirstOrDefault(t => string.Equals(t, tipo.Trim(), StringComparison.OrdinalIgnoreCase));
 
     }
 }

@@ -1,3 +1,4 @@
+using API.Endpoints;
 using Aplicacion.Servicios;
 using API.DTOs;
 using Datos_en_Transito.Persistencia;
@@ -40,3 +41,7 @@ app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Datos en 
 app.MapGet("/swagger", () => Results.Redirect("/swagger/index.html"));
 app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
+
+app.MapDispositivosEndpoints();
+app.MapSimulacionEndpoints();
+app.Run();

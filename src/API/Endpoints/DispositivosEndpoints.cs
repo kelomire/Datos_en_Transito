@@ -1,3 +1,4 @@
+using static API.Validacion.FiltrosValidacion;
 using Aplicacion.Servicios;
 using API.DTOs;
 using Datos_en_Transito.Persistencia;
@@ -10,7 +11,7 @@ namespace API.Endpoints;
 
 public static class DispositivosEndpoints
 {
-    public static void MapDispositivosEndpoints(this IDispositivoRepository app)
+    public static void MapDispositivosEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/api/dispositivos", (DispositivoService service) => Results.Ok(service.Listar().Select(d =>
         new { d.Id, d.Nombre, Tipo = d.GetType().Name, LatenciaMs = d.latenciaMs })))
